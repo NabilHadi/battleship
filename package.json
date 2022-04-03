@@ -1,16 +1,27 @@
 {
   "private": true,
   "scripts": {
+    "test": "jest",
     "start": "webpack serve",
     "watch": "webpack --watch",
     "build": "NODE_ENV=production webpack",
     "build-dev": "webpack"
   },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "moduleDirectories": [
+      "node_modules"
+    ]
+  },
   "devDependencies": {
     "@babel/core": "^7.17.8",
     "@babel/preset-env": "^7.16.11",
+    "babel-jest": "^27.5.1",
     "babel-loader": "^8.2.4",
     "css-loader": "^6.7.1",
+    "jest": "^27.5.1",
     "style-loader": "^3.3.1",
     "webpack": "^5.71.0",
     "webpack-cli": "^4.9.2",

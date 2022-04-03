@@ -1,5 +1,3 @@
-import "./styles/style.css";
-
 const randomObject = {
   length: 100,
   name: "random",
@@ -14,3 +12,5 @@ const randomObject2 = {
 
 console.log(randomObject);
 console.log(randomObject2);
+
+export { randomObject };
