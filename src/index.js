@@ -1,3 +1,5 @@
+import "./styles/style.css";
+
 const randomObject = {
   length: 100,
   name: "random",
