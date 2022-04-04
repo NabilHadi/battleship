@@ -1,3 +1,5 @@
+const ESLintPlugin = require("eslint-webpack-plugin");
+
 let mode = "development";
 
 if (process.env.NODE_ENV === "production") {
@@ -22,6 +24,7 @@ module.exports = {
       },
     ],
   },
+  plugins: [new ESLintPlugin()],
 
   devtool: "source-map",
   devServer: {
