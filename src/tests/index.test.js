@@ -1,4 +1,4 @@
-import { Ship, GameBoard } from "../index.js";
+import { Ship, Gameboard } from "../index.js";
 
 describe("Ship Object", () => {
   test("returns correct length", () => {
@@ -87,11 +87,11 @@ describe("Ship Object", () => {
 
 describe("Gameboard Object", () => {
   test("returns correct board size", () => {
-    expect(GameBoard(9).size).toBe(9);
+    expect(Gameboard(9).size).toBe(9);
   });
 
   test("returns correct board state", () => {
-    const gameboard = GameBoard(2);
+    const gameboard = Gameboard(2);
     expect(gameboard.getBoard()).toContainEqual({
       x: 0,
       y: 0,
@@ -106,7 +106,7 @@ describe("Gameboard Object", () => {
   });
 
   test("getShips function returns correct values", () => {
-    const gameboard = GameBoard(5);
+    const gameboard = Gameboard(5);
     expect(gameboard.getShips().length).toBe(0);
     gameboard.placeShipAt({ x: 1, y: 1 });
     const shipsArray = gameboard.getShips();
@@ -118,7 +118,7 @@ describe("Gameboard Object", () => {
   });
 
   test("placeShipAt function only accepts correct positions", () => {
-    const gameboard = GameBoard(5);
+    const gameboard = Gameboard(5);
     expect(gameboard.placeShipAt({ x: 0, y: 0 })).toBe(true);
     expect(gameboard.placeShipAt({ x: 5, y: 5 })).toBe(false);
     expect(gameboard.placeShipAt({ x: 3, y: 3 })).toBe(true);
@@ -127,7 +127,7 @@ describe("Gameboard Object", () => {
   });
 
   test("placeShipAt function works correctly", () => {
-    const gameboard = GameBoard(5);
+    const gameboard = Gameboard(5);
     gameboard.placeShipAt({ x: 4, y: 3 });
     expect(gameboard.getShips().length).toBe(1);
     gameboard.placeShipAt({ x: 4, y: 3 });

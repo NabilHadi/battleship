@@ -38,7 +38,7 @@ const Ship = function (coordinatesArr = []) {
   };
 };
 
-const GameBoard = function (_size = 0) {
+const Gameboard = function (_size = 0) {
   const boardArray = [];
   const shipsArray = [];
 
@@ -95,4 +95,4 @@ const GameBoard = function (_size = 0) {
   };
 };
 
-export { Ship, GameBoard };
+export { Ship, Gameboard };
