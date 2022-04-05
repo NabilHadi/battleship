@@ -124,6 +124,24 @@ describe("Gameboard Object", () => {
     });
   });
 
+  test("receiveAttack function reports if coordinates is already hit", () => {
+    const gameboard = Gameboard(5);
+    gameboard.placeShipAt({ x: 1, y: 1 }, { x: 2, y: 1 });
+    expect(gameboard.receiveAttack({ x: 0, y: 0 })).toMatchObject({
+      canAttack: true,
+      isMissedShot: true,
+    });
+    expect(gameboard.receiveAttack({ x: 0, y: 0 })).toMatchObject({
+      canAttack: false,
+    });
+    expect(gameboard.receiveAttack({ x: 2, y: 1 })).toMatchObject({
+      canAttack: true,
+    });
+    expect(gameboard.receiveAttack({ x: 2, y: 1 })).toMatchObject({
+      canAttack: false,
+    });
+  });
+
   test("isAllShipsSunk returns correct value", () => {
     const gameboard = Gameboard(2);
     gameboard.placeShipAt({ x: 0, y: 0 });
@@ -144,5 +162,13 @@ describe("Gameboard Object", () => {
     expect(gameboard2.isAllShipsSunk()).toBe(false);
     gameboard2.receiveAttack({ x: 0, y: 1 });
     expect(gameboard2.isAllShipsSunk()).toBe(true);
+  });
+
+  test("resetBoard resets the board", () => {
+    const gameboard = Gameboard(2);
+    gameboard.placeShipAt({ x: 0, y: 0 }, { x: 0, y: 1 });
+    expect(gameboard.getShips().length).toBe(1);
+    gameboard.resetBoard();
+    expect(gameboard.getShips().length).toBe(0);
   });
 });

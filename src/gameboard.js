@@ -1,5 +1,20 @@
 import Ship from "./ship";
 
+const isWithinBoardRange = (coordinatesArray, maxLength) => {
+  return coordinatesArray.every((co) => {
+    return co.x >= 0 && co.x < maxLength && co.y >= 0 && co.y < maxLength;
+  });
+};
+
+const getShipAt = (coordinates, shipsArray) => {
+  return shipsArray.find((ship) => {
+    const shipCoords = ship.getCoordinates();
+    return shipCoords.some((shipCo) => {
+      return shipCo.x === coordinates.x && shipCo.y === coordinates.y;
+    });
+  });
+};
+
 const Gameboard = function (_size = 0) {
   const boardArray = [];
   const shipsArray = [];
@@ -14,23 +29,8 @@ const Gameboard = function (_size = 0) {
     }
   }
 
-  const isWithinBoardRange = (coordinatesArray) => {
-    return coordinatesArray.every((co) => {
-      return co.x >= 0 && co.x < _size && co.y >= 0 && co.y < _size;
-    });
-  };
-
-  const getShipAt = (coordinates) => {
-    return shipsArray.find((ship) => {
-      const shipCoords = ship.getCoordinates();
-      return shipCoords.some((shipCo) => {
-        return shipCo.x === coordinates.x && shipCo.y === coordinates.y;
-      });
-    });
-  };
-
   const canPlaceShipAt = (coordinatesArray) => {
-    if (!isWithinBoardRange(coordinatesArray)) {
+    if (!isWithinBoardRange(coordinatesArray, _size)) {
       return {
         canPlaceShip: false,
         reason: `Coordinates (${coordinatesArray}) are out of board range`,
@@ -39,7 +39,7 @@ const Gameboard = function (_size = 0) {
 
     if (
       coordinatesArray.every((coords) => {
-        return getShipAt(coords);
+        return getShipAt(coords, shipsArray);
       })
     ) {
       return {
@@ -54,18 +54,28 @@ const Gameboard = function (_size = 0) {
   };
 
   const canAttackAt = (coordinates) => {
-    if (!isWithinBoardRange([coordinates])) {
+    if (!isWithinBoardRange([coordinates], _size)) {
       return {
         canAttack: false,
         reason: `Coordinates (${coordinates}) are out of board range`,
       };
     }
 
-    const ship = getShipAt(coordinates);
+    const ship = getShipAt(coordinates, shipsArray);
     if (ship && ship.isHitAt(coordinates)) {
       return {
         canAttack: false,
         reason: `Ship at coordinates(${coordinates}) is already hit`,
+      };
+    }
+
+    const isAlreadyhit = missedAttacks.find(
+      (coords) => coords.x === coordinates.x && coords.y === coordinates.y
+    );
+    if (isAlreadyhit) {
+      return {
+        canAttack: false,
+        reason: `Coordinates (${coordinates}) is already hit`,
       };
     }
 
@@ -99,7 +109,7 @@ const Gameboard = function (_size = 0) {
         return canAttackResponse;
       }
 
-      const ship = getShipAt(coordinates);
+      const ship = getShipAt(coordinates, shipsArray);
       if (!ship) {
         missedAttacks.push(coordinates);
         return { ...canAttackResponse, isMissedShot: true };
@@ -115,6 +125,10 @@ const Gameboard = function (_size = 0) {
       return shipsArray.every((ship) => {
         return ship.isSunk();
       });
+    },
+    resetBoard() {
+      shipsArray.length = 0;
+      missedAttacks.length = 0;
     },
   };
 };
