@@ -1,5 +1,9 @@
 {
   "parser": "@babel/eslint-parser",
   "extends": "eslint:recommended",
-  "ignorePatterns": ["src/**/*.test.js", "/*.config.js"]
+  "ignorePatterns": ["src/**/*.test.js", "/*.config.js"],
+  "env": {
+    "browser": true,
+    "node": true
+  }
 }
