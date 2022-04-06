@@ -1,5 +1,3 @@
 import "./styles/style.css";
-import Game, { DomController } from "./game";
-Game();
-DomController.renderFirstPlayerBoard();
-DomController.renderSecondPlayerBoard();
+import { DomController } from "./game";
+console.log(DomController);

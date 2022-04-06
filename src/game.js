@@ -1,12 +1,10 @@
 import Gameboard from "./gameboard";
 import Player from "./player";
+import GameboardView from "./views/gameboard-view";
 
 export const DomController = (function () {
-  const firstPlayerBoardDiv = document.querySelector("#first-player-board");
-  const secondPlayerBoardDiv = document.querySelector("#second-player-board");
-
-  const player1 = Player("Player1");
-  const player2 = Player("Player2");
+  const player1 = Player({ name: "Player1", id: 1 });
+  const player2 = Player({ name: "Player2", id: 2 });
 
   const gameboard1 = Gameboard(9, player1);
   const gameboard2 = Gameboard(9, player2);
@@ -17,72 +15,51 @@ export const DomController = (function () {
   gameboard2.placeShipAt({ x: 8, y: 8 }, { x: 7, y: 8 }, { x: 6, y: 8 });
   gameboard2.placeShipAt({ x: 7, y: 3 }, { x: 6, y: 3 }, { x: 5, y: 3 });
 
+  const firstPlayerBoardView = GameboardView("first-player-board", ["board"]);
+  const secondPlayerBoardView = GameboardView("second-player-board", ["board"]);
+
+  firstPlayerBoardView.populateView(gameboard1);
+  secondPlayerBoardView.populateView(gameboard2);
+
+  const firstPlayerContainerView = document.querySelector(
+    "#first-player-container"
+  );
+  const secondPlayerContainerView = document.querySelector(
+    "#second-player-container"
+  );
+
+  firstPlayerContainerView.append(firstPlayerBoardView.getView());
+  secondPlayerContainerView.append(secondPlayerBoardView.getView());
+
   let isFirstPlayerTurn = true;
 
-  const boardUnitClickHandler = (e) => {
+  const boardClickHandler = (e) => {
     if (!e.target.dataset.x && !e.target.dataset.y) return;
     e.stopPropagation();
 
     const x = Number(e.target.dataset.x);
     const y = Number(e.target.dataset.y);
-    const targetPlayerNum = Number(e.target.dataset.player);
+    const playerNum = Number(e.target.dataset.player);
 
     if (isFirstPlayerTurn) {
-      if (targetPlayerNum !== 2) return;
+      if (playerNum !== 2) return;
 
       const attackResponse = gameboard2.receiveAttack({ x, y });
       console.log(attackResponse);
-      DomController.renderSecondPlayerBoard();
+      secondPlayerBoardView.populateView(gameboard2);
     } else {
-      if (targetPlayerNum !== 1) return;
+      if (playerNum !== 1) return;
       const attackResponse = gameboard1.receiveAttack({ x, y });
       console.log(attackResponse);
-      DomController.renderFirstPlayerBoard();
+      firstPlayerBoardView.populateView(gameboard1);
     }
     isFirstPlayerTurn = !isFirstPlayerTurn;
   };
 
-  firstPlayerBoardDiv.addEventListener("click", boardUnitClickHandler);
-  secondPlayerBoardDiv.addEventListener("click", boardUnitClickHandler);
+  firstPlayerBoardView.getView().addEventListener("click", boardClickHandler);
+  secondPlayerBoardView.getView().addEventListener("click", boardClickHandler);
 
-  return {
-    renderFirstPlayerBoard() {
-      firstPlayerBoardDiv.innerHTML = "";
-      for (let boardUnit of gameboard1.getBoard()) {
-        const boardUnitDiv = document.createElement("div");
-        boardUnitDiv.classList.add("board-unit");
-        if (boardUnit.hasShip) {
-          boardUnitDiv.classList.add("has-ship");
-        } else if (boardUnit.isHit) {
-          boardUnitDiv.classList.add("is-hit");
-        }
-        boardUnitDiv.dataset.x = boardUnit.x;
-        boardUnitDiv.dataset.y = boardUnit.y;
-        boardUnitDiv.dataset.player = 1;
-        boardUnitDiv.dataset.hasShip = boardUnit.hasShip;
-        boardUnitDiv.dataset.isHit = boardUnit.isHit;
-        firstPlayerBoardDiv.append(boardUnitDiv);
-      }
-    },
-    renderSecondPlayerBoard() {
-      secondPlayerBoardDiv.innerHTML = "";
-      for (let boardUnit of gameboard2.getBoard()) {
-        const boardUnitDiv = document.createElement("div");
-        boardUnitDiv.classList.add("board-unit");
-        if (boardUnit.hasShip) {
-          boardUnitDiv.classList.add("has-ship");
-        } else if (boardUnit.isHit) {
-          boardUnitDiv.classList.add("is-hit");
-        }
-        boardUnitDiv.dataset.x = boardUnit.x;
-        boardUnitDiv.dataset.y = boardUnit.y;
-        boardUnitDiv.dataset.player = 2;
-        boardUnitDiv.dataset.hasShip = boardUnit.hasShip;
-        boardUnitDiv.dataset.isHit = boardUnit.isHit;
-        secondPlayerBoardDiv.append(boardUnitDiv);
-      }
-    },
-  };
+  return {};
 })();
 
 const Game = function () {
