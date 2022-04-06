@@ -15,7 +15,7 @@ const getShipAt = (coordinates, shipsArray) => {
   });
 };
 
-const Gameboard = function (_size = 0) {
+const Gameboard = function (_size = 0, _player = null) {
   const boardArray = [];
   const shipsArray = [];
   const missedAttacks = [];
@@ -25,6 +25,8 @@ const Gameboard = function (_size = 0) {
       boardArray.push({
         x,
         y,
+        isHit: false,
+        hasShip: false,
       });
     }
   }
@@ -88,6 +90,9 @@ const Gameboard = function (_size = 0) {
     get size() {
       return _size;
     },
+    get player() {
+      return _player;
+    },
     placeShipAt(...coordinatesArray) {
       const canPlaceShipResponse = canPlaceShipAt(coordinatesArray);
       if (!canPlaceShipResponse.canPlaceShip) {
@@ -95,6 +100,17 @@ const Gameboard = function (_size = 0) {
       }
       const ship = Ship(coordinatesArray);
       shipsArray.push(ship);
+      for (let shipCoords of ship.getCoordinates()) {
+        for (let boardCoords of boardArray) {
+          if (
+            shipCoords.x === boardCoords.x &&
+            shipCoords.y === boardCoords.y
+          ) {
+            boardCoords.hasShip = true;
+          }
+        }
+      }
+
       return canPlaceShipResponse;
     },
     getBoard() {
@@ -109,12 +125,15 @@ const Gameboard = function (_size = 0) {
         return canAttackResponse;
       }
 
+      boardArray.find((coords) => {
+        return coords.x === coordinates.x && coords.y === coordinates.y;
+      }).isHit = true;
+
       const ship = getShipAt(coordinates, shipsArray);
       if (!ship) {
         missedAttacks.push(coordinates);
         return { ...canAttackResponse, isMissedShot: true };
       }
-
       ship.hit(coordinates);
       return {
         ...canAttackResponse,
