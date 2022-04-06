@@ -9,11 +9,6 @@ const GameboardView = (id, classes) => {
       for (let boardUnit of gameboardModel.getBoard()) {
         const boardUnitDiv = document.createElement("div");
         boardUnitDiv.classList.add("board-unit");
-        if (boardUnit.hasShip) {
-          boardUnitDiv.classList.add("has-ship");
-        } else if (boardUnit.isHit) {
-          boardUnitDiv.classList.add("is-hit");
-        }
         boardUnitDiv.dataset.x = boardUnit.x;
         boardUnitDiv.dataset.y = boardUnit.y;
         boardUnitDiv.dataset.player = gameboardModel.getPlayerId();

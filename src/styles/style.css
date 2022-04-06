@@ -43,10 +43,10 @@ body {
   height: 100%;
 }
 
-.board .board-unit.has-ship {
+.board .board-unit[data-has-ship="true"] {
   background-color: aqua;
 }
 
-.board .board-unit.is-hit {
+.board .board-unit[data-is-hit="true"] {
   background-color: red;
 }
