@@ -1,4 +1,5 @@
 const ESLintPlugin = require("eslint-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 let mode = "development";
 
@@ -24,7 +25,10 @@ module.exports = {
       },
     ],
   },
-  plugins: [new ESLintPlugin()],
+  plugins: [
+    new ESLintPlugin(),
+    new HtmlWebpackPlugin({ template: "./src/index.html" }),
+  ],
 
   devtool: "source-map",
   devServer: {
