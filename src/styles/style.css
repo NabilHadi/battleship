@@ -1,6 +1,7 @@
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
   background-color: #ddd;
   color: #222;
 }
@@ -20,6 +21,7 @@ body {
   padding: 8px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 1fr 30%;
 }
 
 .player-container {
@@ -29,7 +31,14 @@ body {
   padding: 8px;
 }
 
+.output-msg {
+  background-color: #222;
+  color: wheat;
+  grid-column: span 2;
+}
+
 .player-container .board {
+  flex: 1;
   display: grid;
   grid-template-columns: repeat(9, 40px);
   grid-template-rows: repeat(9, 40px);
