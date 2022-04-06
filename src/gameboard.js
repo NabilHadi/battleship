@@ -149,6 +149,9 @@ const Gameboard = function (_size = 0, _player = null) {
       shipsArray.length = 0;
       missedAttacks.length = 0;
     },
+    getPlayerId() {
+      return _player.id;
+    },
   };
 };
 
