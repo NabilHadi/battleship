@@ -31,6 +31,8 @@ export const DomController = (function () {
   firstPlayerContainerView.append(firstPlayerBoardView.getView());
   secondPlayerContainerView.append(secondPlayerBoardView.getView());
 
+  const outputDiv = document.querySelector(".output-msg");
+
   let isFirstPlayerTurn = true;
 
   const boardClickHandler = (e) => {
@@ -40,19 +42,22 @@ export const DomController = (function () {
     const x = Number(e.target.dataset.x);
     const y = Number(e.target.dataset.y);
     const playerNum = Number(e.target.dataset.player);
+    let attackResponse;
 
     if (isFirstPlayerTurn) {
       if (playerNum !== 2) return;
 
-      const attackResponse = gameboard2.receiveAttack({ x, y });
+      attackResponse = gameboard2.receiveAttack({ x, y });
       console.log(attackResponse);
       secondPlayerBoardView.populateView(gameboard2);
     } else {
       if (playerNum !== 1) return;
-      const attackResponse = gameboard1.receiveAttack({ x, y });
+
+      attackResponse = gameboard1.receiveAttack({ x, y });
       console.log(attackResponse);
       firstPlayerBoardView.populateView(gameboard1);
     }
+    outputDiv.textContent = JSON.stringify(attackResponse);
     isFirstPlayerTurn = !isFirstPlayerTurn;
   };
 
@@ -61,13 +66,3 @@ export const DomController = (function () {
 
   return {};
 })();
-
-const Game = function () {
-  return {
-    getBoards() {
-      return "[gameboard1.getBoard(), gameboard2.getBoard()]";
-    },
-  };
-};
-
-export default Game;
