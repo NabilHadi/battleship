@@ -33,5 +33,11 @@ module.exports = {
   devtool: "source-map",
   devServer: {
     static: "./dist",
+    client: {
+      overlay: {
+        errors: true,
+        warnings: false,
+      },
+    },
   },
 };
