@@ -32,9 +32,7 @@ const Ship = function (coordinatesArr = []) {
       });
     },
     getCoordinates() {
-      return coordinatesArr.map((pos) => {
-        return { x: pos.x, y: pos.y };
-      });
+      return coordinatesArr;
     },
   };
 };

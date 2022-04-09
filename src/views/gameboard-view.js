@@ -1,24 +1,45 @@
-const GameboardView = (id, classes) => {
+import GridItemView from "./grid-item-view";
+
+const GameboardView = (id, classes, gameboard, showShips) => {
   const gameboardDiv = document.createElement("div");
   gameboardDiv.setAttribute("id", id);
   gameboardDiv.classList.add(...classes);
+  const gameBoardItemViews = [];
+
+  for (let boardUnit of gameboard.getBoard()) {
+    const boardItemView = GridItemView(
+      ["board-unit"],
+      boardUnit.x,
+      boardUnit.y,
+      gameboard.getPlayerId()
+    );
+
+    if (showShips && gameboard.hasShipAt({ x: boardUnit.x, y: boardUnit.y })) {
+      boardItemView.addHasShip();
+    }
+    gameBoardItemViews.push(boardItemView);
+    gameboardDiv.append(boardItemView.getView());
+  }
 
   return {
-    populateView(gameboardModel) {
-      gameboardDiv.innerHTML = "";
-      for (let boardUnit of gameboardModel.getBoard()) {
-        const boardUnitDiv = document.createElement("div");
-        boardUnitDiv.classList.add("board-unit");
-        boardUnitDiv.dataset.x = boardUnit.x;
-        boardUnitDiv.dataset.y = boardUnit.y;
-        boardUnitDiv.dataset.player = gameboardModel.getPlayerId();
-        boardUnitDiv.dataset.hasShip = boardUnit.hasShip;
-        boardUnitDiv.dataset.isHit = boardUnit.isHit;
-        gameboardDiv.append(boardUnitDiv);
+    changeHitStateFor(coordinates, isMissedAttack) {
+      const boardItemView = gameBoardItemViews.find((v) => {
+        return (
+          v.getView().dataset.x == coordinates.x &&
+          v.getView().dataset.y == coordinates.y
+        );
+      });
+
+      boardItemView.getView().dataset.isHit = true;
+      if (!isMissedAttack) {
+        boardItemView.addHasShip();
       }
     },
     getView() {
       return gameboardDiv;
+    },
+    getBoardItemViews() {
+      return gameBoardItemViews;
     },
   };
 };

@@ -2,7 +2,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  background-color: #ddd;
   color: #222;
 }
 
@@ -11,39 +10,57 @@ body {
 }
 
 #container {
-  min-height: 100vh;
-  padding: 8px;
   display: grid;
 }
 
 #game-container {
+  height: 100vh;
   border: 1px solid #222;
-  padding: 8px;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: 1fr 30%;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  background-color: aliceblue;
+  gap: 8px;
+}
+
+#first-player-container {
+  grid-column: 2/3;
+  grid-row: 2/3;
+}
+
+#second-player-container {
+  grid-column: 3/4;
+  grid-row: 2/3;
 }
 
 .player-container {
   display: flex;
   flex-direction: column;
-  border: 1px solid bisque;
-  padding: 8px;
+  text-align: center;
+}
+
+.player-container .board-title {
+  padding: 3px;
 }
 
 .output-msg {
+  grid-row: 3/4;
+  grid-column: 2/4;
   background-color: #222;
   color: wheat;
-  grid-column: span 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .player-container .board {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(9, 40px);
-  grid-template-rows: repeat(9, 40px);
+  grid-template-columns: repeat(9, minmax(40px, 1fr));
+  grid-template-rows: repeat(9, minmax(40px, 1fr));
   justify-content: center;
   align-items: center;
+  background-color: #7ebbd9;
 }
 
 .board .board-unit {
@@ -53,9 +70,13 @@ body {
 }
 
 .board .board-unit[data-has-ship="true"] {
-  background-color: aqua;
+  background-color: greenyellow;
 }
 
 .board .board-unit[data-is-hit="true"] {
   background-color: red;
+}
+
+.board .board-unit[data-has-ship="true"][data-is-hit="true"] {
+  background-color: black;
 }

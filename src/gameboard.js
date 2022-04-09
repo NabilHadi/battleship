@@ -10,7 +10,7 @@ const getShipAt = (coordinates, shipsArray) => {
   return shipsArray.find((ship) => {
     const shipCoords = ship.getCoordinates();
     return shipCoords.some((shipCo) => {
-      return shipCo.x === coordinates.x && shipCo.y === coordinates.y;
+      return shipCo.x == coordinates.x && shipCo.y == coordinates.y;
     });
   });
 };
@@ -25,65 +25,44 @@ const Gameboard = function (_size = 0, _player = null) {
       boardArray.push({
         x,
         y,
-        isHit: false,
-        hasShip: false,
       });
     }
   }
 
   const canPlaceShipAt = (coordinatesArray) => {
     if (!isWithinBoardRange(coordinatesArray, _size)) {
-      return {
-        canPlaceShip: false,
-        reason: `Coordinates (${coordinatesArray}) are out of board range`,
-      };
+      return false;
     }
 
     if (
-      coordinatesArray.every((coords) => {
+      coordinatesArray.some((coords) => {
         return getShipAt(coords, shipsArray);
       })
     ) {
-      return {
-        canPlaceShip: false,
-        reason: `Cannot place ship at coordinates (${coordinatesArray}, another ship is in place)`,
-      };
+      return false;
     }
 
-    return {
-      canPlaceShip: true,
-    };
+    return true;
   };
 
   const canAttackAt = (coordinates) => {
     if (!isWithinBoardRange([coordinates], _size)) {
-      return {
-        canAttack: false,
-        reason: `Coordinates (${coordinates}) are out of board range`,
-      };
+      return false;
     }
 
     const ship = getShipAt(coordinates, shipsArray);
     if (ship && ship.isHitAt(coordinates)) {
-      return {
-        canAttack: false,
-        reason: `Ship at coordinates(${coordinates}) is already hit`,
-      };
+      return false;
     }
 
     const isAlreadyhit = missedAttacks.find(
       (coords) => coords.x === coordinates.x && coords.y === coordinates.y
     );
     if (isAlreadyhit) {
-      return {
-        canAttack: false,
-        reason: `Coordinates (${coordinates}) is already hit`,
-      };
+      return false;
     }
 
-    return {
-      canAttack: true,
-    };
+    return true;
   };
 
   return {
@@ -94,24 +73,11 @@ const Gameboard = function (_size = 0, _player = null) {
       return _player;
     },
     placeShipAt(...coordinatesArray) {
-      const canPlaceShipResponse = canPlaceShipAt(coordinatesArray);
-      if (!canPlaceShipResponse.canPlaceShip) {
-        return canPlaceShipResponse;
-      }
+      if (!canPlaceShipAt(coordinatesArray)) return false;
+
       const ship = Ship(coordinatesArray);
       shipsArray.push(ship);
-      for (let shipCoords of ship.getCoordinates()) {
-        for (let boardCoords of boardArray) {
-          if (
-            shipCoords.x === boardCoords.x &&
-            shipCoords.y === boardCoords.y
-          ) {
-            boardCoords.hasShip = true;
-          }
-        }
-      }
-
-      return canPlaceShipResponse;
+      return true;
     },
     getBoard() {
       return [...boardArray];
@@ -119,26 +85,23 @@ const Gameboard = function (_size = 0, _player = null) {
     getShips() {
       return [...shipsArray];
     },
+    hasShipAt(coordinates) {
+      return !!getShipAt(coordinates, shipsArray);
+    },
+    getMissedAttacks() {
+      return [...missedAttacks];
+    },
     receiveAttack(coordinates) {
-      const canAttackResponse = canAttackAt(coordinates);
-      if (!canAttackResponse.canAttack) {
-        return canAttackResponse;
-      }
-
-      boardArray.find((coords) => {
-        return coords.x === coordinates.x && coords.y === coordinates.y;
-      }).isHit = true;
+      if (!canAttackAt(coordinates)) return false;
 
       const ship = getShipAt(coordinates, shipsArray);
       if (!ship) {
         missedAttacks.push(coordinates);
-        return { ...canAttackResponse, isMissedShot: true };
+        return { isMissedAttack: true };
+      } else {
+        ship.hit(coordinates);
+        return { isMissedAttack: false };
       }
-      ship.hit(coordinates);
-      return {
-        ...canAttackResponse,
-        isMissedShot: false,
-      };
     },
     isAllShipsSunk() {
       return shipsArray.every((ship) => {

@@ -1,68 +1,113 @@
 import Gameboard from "./gameboard";
-import Player from "./player";
-import GameboardView from "./views/gameboard-view";
+import Player, { AIPlayer } from "./player";
+import {
+  getRandomAdjacentXCoordinates,
+  getRandomAdjacentYCoordinates,
+} from "./utils";
 
-export const DomController = (function () {
+export const EventAggregator = (function () {
+  function Event(name) {
+    this._handlers = [];
+    this.name = name;
+  }
+  Event.prototype.addHandler = function (handler) {
+    this._handlers.push(handler);
+  };
+  Event.prototype.removeHandler = function (handler) {
+    this._handlers = this._handlers.filter((h) => {
+      h !== handler;
+    });
+  };
+  Event.prototype.fire = function (eventArgs) {
+    this._handlers.forEach(function (h) {
+      h(eventArgs);
+    });
+  };
+
+  const events = [];
+
+  function getEvent(eventName) {
+    return events.find((e) => {
+      return e.name === eventName;
+    });
+  }
+
+  return {
+    publish(eventName, eventArgs) {
+      let event = getEvent(eventName);
+
+      if (!event) {
+        event = new Event(eventName);
+        events.push(event);
+      }
+
+      event.fire(eventArgs);
+    },
+    subscribe(eventName, handler) {
+      let event = getEvent(eventName);
+
+      if (!event) {
+        event = new Event(eventName);
+        events.push(event);
+      }
+
+      event.addHandler(handler);
+    },
+  };
+})();
+
+export const GameModule = (function (boardsSize) {
+  const COMPUTER_PLAYED = "computerPlayed";
+  const GAME_END_EVENT = "gameEnded";
+
   const player1 = Player({ name: "Player1", id: 1 });
-  const player2 = Player({ name: "Player2", id: 2 });
+  const gameboard1 = Gameboard(boardsSize, player1);
 
-  const gameboard1 = Gameboard(9, player1);
-  const gameboard2 = Gameboard(9, player2);
-
-  gameboard1.placeShipAt({ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 });
-  gameboard1.placeShipAt({ x: 4, y: 4 }, { x: 5, y: 4 }, { x: 6, y: 4 });
-
-  gameboard2.placeShipAt({ x: 8, y: 8 }, { x: 7, y: 8 }, { x: 6, y: 8 });
-  gameboard2.placeShipAt({ x: 7, y: 3 }, { x: 6, y: 3 }, { x: 5, y: 3 });
-
-  const firstPlayerBoardView = GameboardView("first-player-board", ["board"]);
-  const secondPlayerBoardView = GameboardView("second-player-board", ["board"]);
-
-  firstPlayerBoardView.populateView(gameboard1);
-  secondPlayerBoardView.populateView(gameboard2);
-
-  const firstPlayerContainerView = document.querySelector(
-    "#first-player-container"
-  );
-  const secondPlayerContainerView = document.querySelector(
-    "#second-player-container"
-  );
-
-  firstPlayerContainerView.append(firstPlayerBoardView.getView());
-  secondPlayerContainerView.append(secondPlayerBoardView.getView());
-
-  const outputDiv = document.querySelector(".output-msg");
+  const computerPlayer = AIPlayer("Computer", 2, gameboard1);
+  const gameboard2 = Gameboard(boardsSize, computerPlayer);
 
   let isFirstPlayerTurn = true;
 
-  const boardClickHandler = (e) => {
-    if (!e.target.dataset.x && !e.target.dataset.y) return;
-    e.stopPropagation();
+  return {
+    player1,
+    computerPlayer,
+    gameboard1,
+    gameboard2,
+    get isFirstPlayerTurn() {
+      return isFirstPlayerTurn;
+    },
+    set isFirstPlayerTurn(v) {
+      isFirstPlayerTurn = v;
+    },
+    nextPlayerTurn() {
+      isFirstPlayerTurn = false;
+      if (gameboard1.isAllShipsSunk()) {
+        EventAggregator.publish(GAME_END_EVENT, { winner: computerPlayer });
+      } else if (gameboard2.isAllShipsSunk()) {
+        EventAggregator.publish(GAME_END_EVENT, { winner: player1 });
+      } else {
+        // computer plays too fast, gotta slow it down a bit
+        setTimeout(() => {
+          EventAggregator.publish(COMPUTER_PLAYED, computerPlayer.play());
+        }, 300);
+      }
+    },
+    placeShipsOnBoards() {
+      gameboard1.placeShipAt(...getRandomAdjacentXCoordinates(3, boardsSize));
+      gameboard1.placeShipAt(...getRandomAdjacentXCoordinates(3, boardsSize));
+      gameboard1.placeShipAt(...getRandomAdjacentYCoordinates(3, boardsSize));
+      gameboard1.placeShipAt(...getRandomAdjacentYCoordinates(3, boardsSize));
 
-    const x = Number(e.target.dataset.x);
-    const y = Number(e.target.dataset.y);
-    const playerNum = Number(e.target.dataset.player);
-    let attackResponse;
-
-    if (isFirstPlayerTurn) {
-      if (playerNum !== 2) return;
-
-      attackResponse = gameboard2.receiveAttack({ x, y });
-      console.log(attackResponse);
-      secondPlayerBoardView.populateView(gameboard2);
-    } else {
-      if (playerNum !== 1) return;
-
-      attackResponse = gameboard1.receiveAttack({ x, y });
-      console.log(attackResponse);
-      firstPlayerBoardView.populateView(gameboard1);
-    }
-    outputDiv.textContent = JSON.stringify(attackResponse);
-    isFirstPlayerTurn = !isFirstPlayerTurn;
+      gameboard2.placeShipAt(...getRandomAdjacentXCoordinates(3, boardsSize));
+      gameboard2.placeShipAt(...getRandomAdjacentXCoordinates(3, boardsSize));
+      gameboard2.placeShipAt(...getRandomAdjacentYCoordinates(3, boardsSize));
+      gameboard2.placeShipAt(...getRandomAdjacentYCoordinates(3, boardsSize));
+    },
+    get COMPUTER_PLAYED() {
+      return COMPUTER_PLAYED;
+    },
+    get GAME_END_EVENT() {
+      return GAME_END_EVENT;
+    },
   };
-
-  firstPlayerBoardView.getView().addEventListener("click", boardClickHandler);
-  secondPlayerBoardView.getView().addEventListener("click", boardClickHandler);
-
-  return {};
-})();
+})(9);
