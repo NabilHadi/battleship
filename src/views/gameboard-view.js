@@ -1,9 +1,21 @@
+import { createHTMLElement } from "../utils";
 import GridItemView from "./grid-item-view";
 
 const GameboardView = (id, classes, boardArray, playerId) => {
-  const gameboardDiv = document.createElement("div");
-  gameboardDiv.setAttribute("id", id);
-  gameboardDiv.classList.add(...classes);
+  const gameboardDiv = createHTMLElement({ id, classes });
+  const boardOverlay = createHTMLElement({
+    id: `board-${playerId}-overlay`,
+    classes: ["enemy-overlay", "hide"],
+  });
+
+  const startGameBtn = createHTMLElement({
+    id: `start-game-btn-${playerId}`,
+    classes: ["start-game-btn", "btn"],
+  });
+  startGameBtn.textContent = "START GAME";
+  boardOverlay.append(startGameBtn);
+
+  gameboardDiv.append(boardOverlay);
 
   const boardUnitViews = [];
   let boardUnitShipViews = [];
@@ -77,11 +89,20 @@ const GameboardView = (id, classes, boardArray, playerId) => {
         unitView.removeHasShip();
       });
     },
+    showOverLay() {
+      boardOverlay.classList.remove("hide");
+    },
+    hideOverlay() {
+      boardOverlay.classList.add("hide");
+    },
     getView() {
       return gameboardDiv;
     },
     getBoardItemViews() {
       return boardUnitViews;
+    },
+    getStartGameBtn() {
+      return startGameBtn;
     },
   };
 };

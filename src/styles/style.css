@@ -18,11 +18,16 @@ body {
   color: #444;
 }
 
-.btn:hover {
+.btn[disabled] {
+  cursor: default;
+  opacity: 0.3;
+}
+
+.btn:not(.btn[disabled]):hover {
   opacity: 0.8;
 }
 
-.btn:active {
+.btn:not(.btn[disabled]):active {
   opacity: 1;
 }
 
@@ -78,6 +83,7 @@ body {
 
 .player-ships #reset-ships-btn {
   margin-top: 29px;
+  line-height: 1.5;
 }
 
 .player-ships .ship {
@@ -136,6 +142,7 @@ body {
   justify-content: center;
   align-items: center;
   background-color: #7ebbd9;
+  position: relative;
 }
 
 .board .board-unit {
@@ -158,4 +165,19 @@ body {
 
 .board .board-unit[data-has-ship="true"][data-is-hit="true"] {
   background-color: black;
+}
+
+.board .enemy-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.board .enemy-overlay.hide {
+  display: none;
 }

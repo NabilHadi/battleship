@@ -45,6 +45,9 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     destroyerShip,
   ];
 
+  const outputDiv = document.querySelector(".output-msg");
+  const resetShipsBtn = document.querySelector("#reset-ships-btn");
+
   // render boards function
   function renderBoards() {
     player1BoardView = GameboardView(
@@ -62,6 +65,12 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
 
     player1ContainerView.append(player1BoardView.getView());
     player2ContainerView.append(player2BoardView.getView());
+  }
+
+  function resetShipsBtnHandler() {
+    player1BoardView.removeAllShips();
+    GameModule.gameboard1.resetBoard();
+    setupDraggableShips();
   }
 
   function setupDraggableShips() {
@@ -140,12 +149,13 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
   }
 
   function setupResetShipsBtn() {
-    const resetBtn = document.querySelector("#reset-ships-btn");
-    resetBtn.addEventListener("click", () => {
-      player1BoardView.removeAllShips();
-      GameModule.gameboard1.resetBoard();
-      setupDraggableShips();
-    });
+    resetShipsBtn.removeAttribute("disabled");
+    resetShipsBtn.addEventListener("click", resetShipsBtnHandler);
+  }
+
+  function disableResetShipBtn() {
+    resetShipsBtn.addEventListener("click", resetShipsBtnHandler);
+    resetShipsBtn.setAttribute("disabled", "");
   }
 
   function boardClickHandler(evn) {
@@ -192,15 +202,31 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     );
     setupDraggableShips();
     setupResetShipsBtn();
+    player2BoardView.showOverLay();
+    player2BoardView.getStartGameBtn().addEventListener("click", () => {
+      const isAllShipsPlaced = shipsViews.every((shipsView) =>
+        shipsView.getView().classList.contains("hide-draggable-ship")
+      );
+      if (isAllShipsPlaced) {
+        EventAggregator.publish(GameModule.GAME_START_EVENT);
+      } else {
+        outputDiv.textContent = "Please place all ships to start the game";
+      }
+    });
   });
 
   EventAggregator.subscribe(GameModule.GAME_START_EVENT, () => {
+    // disable resetShips button
+    disableResetShipBtn();
+    // hide enemyOverlay
+    player2BoardView.hideOverlay();
+    // set up click handlers
     setupClickHandlers();
+    outputDiv.textContent = "Game started";
   });
 
   EventAggregator.subscribe(GameModule.GAME_END_EVENT, (event) => {
     removeClickHandlers();
-    const outputDiv = document.querySelector(".output-msg");
     outputDiv.textContent = `*** ${event.winner.name} WON!! ***`;
   });
 
@@ -219,6 +245,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     removeClickHandlers,
     setupDraggableShips,
     setupResetShipsBtn,
+    disableResetShipBtn,
   };
 })(
   document.querySelector("#first-player-container"),

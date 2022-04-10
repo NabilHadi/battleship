@@ -1,6 +1,7 @@
+import { createHTMLElement } from "../utils";
+
 const GridItemView = (classes, x, y, playerId) => {
-  const view = document.createElement("div");
-  view.classList.add(...classes);
+  const view = createHTMLElement({ classes });
   view.dataset.x = x;
   view.dataset.y = y;
   view.dataset.player = playerId;
