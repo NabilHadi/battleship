@@ -142,23 +142,20 @@ const Gameboard = function (size = 0, _player = null) {
           for (let i = 0; i < length; i++) {
             shipCoordinates.push({ x: randomCoords.x + i, y: randomCoords.y });
           }
-          isValidCoordinates = true;
         } else if (randomCoords.x - length >= 0) {
           for (let i = length - 1; i >= 0; i--) {
             shipCoordinates.push({ x: randomCoords.x - i, y: randomCoords.y });
           }
-          isValidCoordinates = true;
         } else if (randomCoords.y + length - 1 < size) {
           for (let i = 0; i < length; i++) {
             shipCoordinates.push({ x: randomCoords.x, y: randomCoords.y + i });
           }
-          isValidCoordinates = true;
         } else if (randomCoords.y - length >= 0) {
           for (let i = length - 1; i >= 0; i--) {
             shipCoordinates.push({ x: randomCoords.x, y: randomCoords.y - i });
           }
-          isValidCoordinates = true;
         }
+        isValidCoordinates = canPlaceShipAt(shipCoordinates);
       }
       return shipCoordinates;
     },

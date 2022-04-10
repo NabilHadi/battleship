@@ -1,9 +1,5 @@
 import Gameboard from "./gameboard";
 import Player, { AIPlayer } from "./player";
-import {
-  getRandomAdjacentXCoordinates,
-  getRandomAdjacentYCoordinates,
-} from "./utils";
 
 export const EventAggregator = (function () {
   function Event(name) {
@@ -99,10 +95,11 @@ export const GameModule = (function (boardsSize) {
       }
     },
     placeShipsOnBoards() {
-      gameboard2.placeShipAt(...getRandomAdjacentXCoordinates(3, boardsSize));
-      gameboard2.placeShipAt(...getRandomAdjacentXCoordinates(3, boardsSize));
-      gameboard2.placeShipAt(...getRandomAdjacentYCoordinates(3, boardsSize));
-      gameboard2.placeShipAt(...getRandomAdjacentYCoordinates(3, boardsSize));
+      gameboard2.placeShipAt(...gameboard1.getValidShipCoordinates(5));
+      gameboard2.placeShipAt(...gameboard1.getValidShipCoordinates(4));
+      gameboard2.placeShipAt(...gameboard1.getValidShipCoordinates(3));
+      gameboard2.placeShipAt(...gameboard1.getValidShipCoordinates(3));
+      gameboard2.placeShipAt(...gameboard1.getValidShipCoordinates(2));
     },
     get COMPUTER_PLAYED_EVENT() {
       return COMPUTER_PLAYED_EVENT;
