@@ -12,6 +12,9 @@ const GridItemView = (classes, x, y, playerId) => {
     addIsHit() {
       view.dataset.isHit = true;
     },
+    removeHasShip() {
+      view.dataset.hasShip = false;
+    },
     getView() {
       return view;
     },

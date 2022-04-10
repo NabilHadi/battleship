@@ -25,6 +25,73 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     player2ContainerView.append(player2BoardView.getView());
   }
 
+  function setupDraggableShips() {
+    const p1Ships = document.querySelectorAll("#first-player-ships .ship");
+    p1Ships.forEach((ship) => {
+      ship.addEventListener("dragstart", (e) => {
+        e.target.classList.add("dragging");
+      });
+
+      ship.addEventListener("dragend", (e) => {
+        e.target.classList.remove("dragging");
+      });
+    });
+
+    const p1BoardUnits = document.querySelectorAll(
+      `.board-unit[data-player="1"]`
+    );
+
+    p1BoardUnits.forEach((unit) => {
+      let adjacentUnits = [];
+
+      unit.addEventListener("dragover", (e) => {
+        adjacentUnits = [];
+        const dragging = document.querySelector(".dragging");
+        const length = Number(dragging.dataset.length);
+        const x = Number(unit.dataset.x);
+        const y = Number(unit.dataset.y);
+
+        if (length > 0) {
+          for (let i = 0; i <= length - 1; i++) {
+            adjacentUnits.push({ x: x + i, y });
+          }
+
+          const canPlace = GameModule.gameboard1.canPlaceShipAt(adjacentUnits);
+          if (canPlace) {
+            e.preventDefault();
+            adjacentUnits.forEach((u) => {
+              player1BoardView.changeShipHintClass(u, true);
+            });
+          }
+        }
+      });
+
+      unit.addEventListener("dragleave", () => {
+        adjacentUnits.forEach((u) => {
+          player1BoardView.changeShipHintClass(u, false);
+        });
+      });
+
+      unit.addEventListener("drop", () => {
+        adjacentUnits.forEach((u) => {
+          player1BoardView.changeShipHintClass(u, false);
+        });
+        const dragging = document.querySelector(".dragging");
+        const length = Number(dragging.dataset.length);
+
+        if (length > 0) {
+          const canPlace = GameModule.gameboard1.placeShipAt(...adjacentUnits);
+          if (canPlace) {
+            adjacentUnits.forEach((u) => {
+              player1BoardView.changeShipStateFor(u, true);
+            });
+            dragging.remove();
+          }
+        }
+      });
+    });
+  }
+
   function boardClickHandler(evn) {
     if (!evn.target.dataset.x && !evn.target.dataset.y) return;
     evn.stopPropagation();
@@ -77,6 +144,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     renderBoards,
     setupClickHandlers,
     removeClickHandlers,
+    setupDraggableShips,
   };
 })(
   document.querySelector("#first-player-container"),
@@ -84,9 +152,3 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
 );
 
 export default DOMController;
-
-// 1- render boards on the DOM
-// 2- add click lisensers and handlers for boards
-// 3- when user clicks on board call recieve attack on that board
-// 4- check if attack is either missed shot or seccesful attack on ship
-// 5- update board on DOM

@@ -28,9 +28,51 @@ body {
   grid-row: 2/3;
 }
 
+#first-player-ships {
+  grid-row: 2/3;
+  grid-column: 1/2;
+}
+
+#second-player-ships {
+  grid-row: 2/3;
+  grid-column: 4/5;
+}
+
 #second-player-container {
   grid-column: 3/4;
   grid-row: 2/3;
+}
+
+.player-ships {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.player-ships .ship {
+  display: flex;
+  background-color: greenyellow;
+}
+
+.draggable {
+  cursor: move;
+}
+
+.draggable.dragging {
+  opacity: 0.5;
+}
+
+.player-ships .ship.h {
+  display: flex;
+  flex-direction: column;
+}
+
+.player-ships .ship > * {
+  height: 20px;
+  width: 20px;
+  border: 1px solid black;
 }
 
 .player-container {
@@ -67,6 +109,10 @@ body {
   border: 1px solid black;
   width: 100%;
   height: 100%;
+}
+
+.board .board-unit.ship-placement-hint {
+  background-color: #222;
 }
 
 .board .board-unit[data-has-ship="true"] {

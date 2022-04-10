@@ -20,7 +20,6 @@ export const AIPlayer = function (name, id, enmeyGamebaord) {
       let coordinates = getRandomCoordinates(enmeyGamebaord.size);
       let response = enmeyGamebaord.receiveAttack(coordinates);
       while (!response) {
-        console.log(response);
         coordinates = getRandomCoordinates(enmeyGamebaord.size);
         response = enmeyGamebaord.receiveAttack(coordinates);
       }

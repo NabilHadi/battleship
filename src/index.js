@@ -6,3 +6,4 @@ GameModule.placeShipsOnBoards();
 
 DOMController.renderBoards();
 DOMController.setupClickHandlers();
+DOMController.setupDraggableShips();

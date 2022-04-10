@@ -89,15 +89,13 @@ export const GameModule = (function (boardsSize) {
         // computer plays too fast, gotta slow it down a bit
         setTimeout(() => {
           EventAggregator.publish(COMPUTER_PLAYED, computerPlayer.play());
+          if (gameboard1.isAllShipsSunk()) {
+            EventAggregator.publish(GAME_END_EVENT, { winner: computerPlayer });
+          }
         }, 300);
       }
     },
     placeShipsOnBoards() {
-      gameboard1.placeShipAt(...getRandomAdjacentXCoordinates(3, boardsSize));
-      gameboard1.placeShipAt(...getRandomAdjacentXCoordinates(3, boardsSize));
-      gameboard1.placeShipAt(...getRandomAdjacentYCoordinates(3, boardsSize));
-      gameboard1.placeShipAt(...getRandomAdjacentYCoordinates(3, boardsSize));
-
       gameboard2.placeShipAt(...getRandomAdjacentXCoordinates(3, boardsSize));
       gameboard2.placeShipAt(...getRandomAdjacentXCoordinates(3, boardsSize));
       gameboard2.placeShipAt(...getRandomAdjacentYCoordinates(3, boardsSize));

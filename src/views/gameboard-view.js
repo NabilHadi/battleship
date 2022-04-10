@@ -35,6 +35,38 @@ const GameboardView = (id, classes, gameboard, showShips) => {
         boardItemView.addHasShip();
       }
     },
+    changeShipStateFor(coordinates, hasShip) {
+      const boardItemView = gameBoardItemViews.find((v) => {
+        return (
+          v.getView().dataset.x == coordinates.x &&
+          v.getView().dataset.y == coordinates.y
+        );
+      });
+
+      if (!boardItemView) return;
+
+      if (hasShip) {
+        boardItemView.addHasShip();
+      } else {
+        boardItemView.removeHasShip();
+      }
+    },
+    changeShipHintClass(coordinates, hasShip) {
+      const boardItemView = gameBoardItemViews.find((v) => {
+        return (
+          v.getView().dataset.x == coordinates.x &&
+          v.getView().dataset.y == coordinates.y
+        );
+      });
+
+      if (!boardItemView) return;
+
+      if (hasShip) {
+        boardItemView.getView().classList.add("ship-placement-hint");
+      } else {
+        boardItemView.getView().classList.remove("ship-placement-hint");
+      }
+    },
     getView() {
       return gameboardDiv;
     },

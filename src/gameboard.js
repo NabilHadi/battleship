@@ -15,22 +15,22 @@ const getShipAt = (coordinates, shipsArray) => {
   });
 };
 
-const Gameboard = function (_size = 0, _player = null) {
+const Gameboard = function (size = 0, _player = null) {
   const boardArray = [];
   const shipsArray = [];
   const missedAttacks = [];
 
-  for (let x = 0; x < _size; x++) {
-    for (let y = 0; y < _size; y++) {
+  for (let y = size - 1; y >= 0; y--) {
+    for (let x = 0; x < size; x++) {
       boardArray.push({
-        x,
         y,
+        x,
       });
     }
   }
 
   const canPlaceShipAt = (coordinatesArray) => {
-    if (!isWithinBoardRange(coordinatesArray, _size)) {
+    if (!isWithinBoardRange(coordinatesArray, size)) {
       return false;
     }
 
@@ -46,7 +46,7 @@ const Gameboard = function (_size = 0, _player = null) {
   };
 
   const canAttackAt = (coordinates) => {
-    if (!isWithinBoardRange([coordinates], _size)) {
+    if (!isWithinBoardRange([coordinates], size)) {
       return false;
     }
 
@@ -67,10 +67,25 @@ const Gameboard = function (_size = 0, _player = null) {
 
   return {
     get size() {
-      return _size;
+      return size;
     },
     get player() {
       return _player;
+    },
+    canPlaceShipAt(coordinatesArray) {
+      if (!isWithinBoardRange(coordinatesArray, size)) {
+        return false;
+      }
+
+      if (
+        coordinatesArray.some((coords) => {
+          return getShipAt(coords, shipsArray);
+        })
+      ) {
+        return false;
+      }
+
+      return true;
     },
     placeShipAt(...coordinatesArray) {
       if (!canPlaceShipAt(coordinatesArray)) return false;
