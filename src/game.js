@@ -57,7 +57,10 @@ export const EventAggregator = (function () {
 })();
 
 export const GameModule = (function (boardsSize) {
-  const COMPUTER_PLAYED = "computerPlayed";
+  const COMPUTER_PLAYED_EVENT = "computerPlayed";
+  const PRE_GAME_STAGE_EVENT = "preGame";
+  const SHIP_PLACEMENT_STAGE_EVENT = "shipPlacement";
+  const GAME_START_EVENT = "gameStart";
   const GAME_END_EVENT = "gameEnded";
 
   const player1 = Player({ name: "Player1", id: 1 });
@@ -88,7 +91,7 @@ export const GameModule = (function (boardsSize) {
       } else {
         // computer plays too fast, gotta slow it down a bit
         setTimeout(() => {
-          EventAggregator.publish(COMPUTER_PLAYED, computerPlayer.play());
+          EventAggregator.publish(COMPUTER_PLAYED_EVENT, computerPlayer.play());
           if (gameboard1.isAllShipsSunk()) {
             EventAggregator.publish(GAME_END_EVENT, { winner: computerPlayer });
           }
@@ -101,11 +104,20 @@ export const GameModule = (function (boardsSize) {
       gameboard2.placeShipAt(...getRandomAdjacentYCoordinates(3, boardsSize));
       gameboard2.placeShipAt(...getRandomAdjacentYCoordinates(3, boardsSize));
     },
-    get COMPUTER_PLAYED() {
-      return COMPUTER_PLAYED;
+    get COMPUTER_PLAYED_EVENT() {
+      return COMPUTER_PLAYED_EVENT;
     },
     get GAME_END_EVENT() {
       return GAME_END_EVENT;
+    },
+    get PRE_GAME_STAGE_EVENT() {
+      return PRE_GAME_STAGE_EVENT;
+    },
+    get SHIP_PLACEMENT_STAGE_EVENT() {
+      return SHIP_PLACEMENT_STAGE_EVENT;
+    },
+    get GAME_START_EVENT() {
+      return GAME_START_EVENT;
     },
   };
 })(9);

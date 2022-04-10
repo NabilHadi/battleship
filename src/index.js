@@ -1,9 +1,11 @@
 import "./styles/style.css";
 import DOMController from "./dom";
-import { GameModule } from "./game";
+import { EventAggregator, GameModule } from "./game";
+
+EventAggregator.publish(GameModule.PRE_GAME_STAGE_EVENT);
 
 GameModule.placeShipsOnBoards();
 
-DOMController.renderBoards();
+EventAggregator.publish(GameModule.SHIP_PLACEMENT_STAGE_EVENT);
+
 DOMController.setupClickHandlers();
-DOMController.setupDraggableShips();

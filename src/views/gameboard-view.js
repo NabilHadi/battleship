@@ -1,58 +1,63 @@
 import GridItemView from "./grid-item-view";
 
-const GameboardView = (id, classes, gameboard, showShips) => {
+const GameboardView = (id, classes, boardArray, playerId) => {
   const gameboardDiv = document.createElement("div");
   gameboardDiv.setAttribute("id", id);
   gameboardDiv.classList.add(...classes);
-  const gameBoardItemViews = [];
 
-  for (let boardUnit of gameboard.getBoard()) {
+  const boardUnitViews = [];
+  let boardUnitShipViews = [];
+
+  for (let boardUnit of boardArray) {
     const boardItemView = GridItemView(
       ["board-unit"],
       boardUnit.x,
       boardUnit.y,
-      gameboard.getPlayerId()
+      playerId
     );
-
-    if (showShips && gameboard.hasShipAt({ x: boardUnit.x, y: boardUnit.y })) {
-      boardItemView.addHasShip();
-    }
-    gameBoardItemViews.push(boardItemView);
+    boardUnitViews.push(boardItemView);
     gameboardDiv.append(boardItemView.getView());
   }
 
   return {
     changeHitStateFor(coordinates, isMissedAttack) {
-      const boardItemView = gameBoardItemViews.find((v) => {
+      const boardUnitView = boardUnitViews.find((v) => {
         return (
           v.getView().dataset.x == coordinates.x &&
           v.getView().dataset.y == coordinates.y
         );
       });
 
-      boardItemView.getView().dataset.isHit = true;
+      if (!boardUnitView) return;
+
+      boardUnitView.getView().dataset.isHit = true;
       if (!isMissedAttack) {
-        boardItemView.addHasShip();
+        boardUnitView.addHasShip();
+        boardUnitShipViews.push(boardUnitView);
       }
     },
     changeShipStateFor(coordinates, hasShip) {
-      const boardItemView = gameBoardItemViews.find((v) => {
+      const boardUnitView = boardUnitViews.find((v) => {
         return (
           v.getView().dataset.x == coordinates.x &&
           v.getView().dataset.y == coordinates.y
         );
       });
 
-      if (!boardItemView) return;
+      if (!boardUnitView) return;
 
       if (hasShip) {
-        boardItemView.addHasShip();
+        boardUnitView.addHasShip();
+        boardUnitShipViews.push(boardUnitView);
       } else {
-        boardItemView.removeHasShip();
+        boardUnitView.removeHasShip();
+        boardUnitShipViews = boardUnitShipViews.filter((unit) => {
+          unit === boardUnitView;
+        });
       }
     },
     changeShipHintClass(coordinates, hasShip) {
-      const boardItemView = gameBoardItemViews.find((v) => {
+      const boardItemView = boardUnitViews.find((v) => {
         return (
           v.getView().dataset.x == coordinates.x &&
           v.getView().dataset.y == coordinates.y
@@ -67,11 +72,16 @@ const GameboardView = (id, classes, gameboard, showShips) => {
         boardItemView.getView().classList.remove("ship-placement-hint");
       }
     },
+    removeAllShips() {
+      boardUnitViews.forEach((unitView) => {
+        unitView.removeHasShip();
+      });
+    },
     getView() {
       return gameboardDiv;
     },
     getBoardItemViews() {
-      return gameBoardItemViews;
+      return boardUnitViews;
     },
   };
 };

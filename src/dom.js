@@ -1,24 +1,63 @@
 import GameboardView from "./views/gameboard-view";
 import { GameModule, EventAggregator } from "./game";
+import ShipView from "./views/ship-view";
+
+const aircraftShip = ShipView(
+  "aircraft",
+  ["ship", "draggable"],
+  false,
+  true,
+  5
+);
+const battleShip = ShipView(
+  "battleship",
+  ["ship", "draggable"],
+  false,
+  true,
+  4
+);
+const submarineShip = ShipView(
+  "submarine",
+  ["ship", "draggable"],
+  false,
+  true,
+  3
+);
+const cruiserShip = ShipView("cruiser", ["ship", "draggable"], false, true, 3);
+const destroyerShip = ShipView(
+  "destroyer",
+  ["ship", "draggable"],
+  false,
+  true,
+  2
+);
 
 // DOM Controller
 const DOMController = (function (player1ContainerView, player2ContainerView) {
   let player1BoardView;
   let player2BoardView;
 
+  const shipsViews = [
+    aircraftShip,
+    battleShip,
+    submarineShip,
+    cruiserShip,
+    destroyerShip,
+  ];
+
   // render boards function
   function renderBoards() {
     player1BoardView = GameboardView(
       "first-player-board",
       ["board"],
-      GameModule.gameboard1,
-      true
+      GameModule.gameboard1.getBoard(),
+      GameModule.gameboard1.getPlayerId()
     );
     player2BoardView = GameboardView(
       "second-player-board",
       ["board"],
-      GameModule.gameboard2,
-      false
+      GameModule.gameboard2.getBoard(),
+      GameModule.gameboard2.getPlayerId()
     );
 
     player1ContainerView.append(player1BoardView.getView());
@@ -26,13 +65,16 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
   }
 
   function setupDraggableShips() {
-    const p1Ships = document.querySelectorAll("#first-player-ships .ship");
-    p1Ships.forEach((ship) => {
-      ship.addEventListener("dragstart", (e) => {
+    shipsViews.forEach((shipView) => {
+      shipView.removeClass("hide-draggable-ship");
+    });
+
+    shipsViews.forEach((shipView) => {
+      shipView.getView().addEventListener("dragstart", (e) => {
         e.target.classList.add("dragging");
       });
 
-      ship.addEventListener("dragend", (e) => {
+      shipView.getView().addEventListener("dragend", (e) => {
         e.target.classList.remove("dragging");
       });
     });
@@ -85,10 +127,24 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
             adjacentUnits.forEach((u) => {
               player1BoardView.changeShipStateFor(u, true);
             });
-            dragging.remove();
+            const shipView = shipsViews.find(
+              (shipView) => shipView.getView().id === dragging.id
+            );
+            if (shipView) {
+              shipView.addClass("hide-draggable-ship");
+            }
           }
         }
       });
+    });
+  }
+
+  function setupResetShipsBtn() {
+    const resetBtn = document.querySelector("#reset-ships-btn");
+    resetBtn.addEventListener("click", () => {
+      player1BoardView.removeAllShips();
+      GameModule.gameboard1.resetBoard();
+      setupDraggableShips();
     });
   }
 
@@ -125,13 +181,30 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     player2BoardView.getView().removeEventListener("click", boardClickHandler);
   }
 
+  EventAggregator.subscribe(GameModule.SHIP_PLACEMENT_STAGE_EVENT, () => {
+    renderBoards();
+    const p1ShipsContainer = document.querySelector(
+      "#first-player-ships #ships-container"
+    );
+
+    p1ShipsContainer.append(
+      ...shipsViews.map((shipView) => shipView.getView())
+    );
+    setupDraggableShips();
+    setupResetShipsBtn();
+  });
+
+  EventAggregator.subscribe(GameModule.GAME_START_EVENT, () => {
+    setupClickHandlers();
+  });
+
   EventAggregator.subscribe(GameModule.GAME_END_EVENT, (event) => {
     removeClickHandlers();
     const outputDiv = document.querySelector(".output-msg");
     outputDiv.textContent = `*** ${event.winner.name} WON!! ***`;
   });
 
-  EventAggregator.subscribe(GameModule.COMPUTER_PLAYED, (event) => {
+  EventAggregator.subscribe(GameModule.COMPUTER_PLAYED_EVENT, (event) => {
     if (event.response.isMissedAttack) {
       player1BoardView.changeHitStateFor(event.coordinates, true);
     } else {
@@ -145,6 +218,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     setupClickHandlers,
     removeClickHandlers,
     setupDraggableShips,
+    setupResetShipsBtn,
   };
 })(
   document.querySelector("#first-player-container"),

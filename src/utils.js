@@ -52,3 +52,14 @@ export const getRandomAdjacentYCoordinates = (length, boardSize) => {
 
   return coordinates;
 };
+
+export const createHTMLElement = ({
+  type = "div",
+  id = "",
+  classes = [],
+} = {}) => {
+  const e = document.createElement(type);
+  e.id = id;
+  e.classList.add(...classes);
+  return e;
+};
