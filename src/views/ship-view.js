@@ -20,6 +20,9 @@ const ShipView = (id, classes, isVertical, isDraggable, length) => {
     removeClass(classToRemove) {
       shipContainer.classList.remove(classToRemove);
     },
+    setIsVertical(isVertical) {
+      shipContainer.dataset.isVertical = isVertical;
+    },
   };
 };
 

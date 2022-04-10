@@ -80,7 +80,16 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
 
     shipsViews.forEach((shipView) => {
       shipView.getView().addEventListener("dragstart", (e) => {
+        outputDiv.textContent = "Hold `shift` to flip the ship";
         e.target.classList.add("dragging");
+      });
+
+      shipView.getView().addEventListener("drag", (e) => {
+        if (e.shiftKey) {
+          shipView.getView().dataset.isVertical = true;
+        } else {
+          shipView.getView().dataset.isVertical = false;
+        }
       });
 
       shipView.getView().addEventListener("dragend", (e) => {
@@ -95,16 +104,29 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     p1BoardUnits.forEach((unit) => {
       let adjacentUnits = [];
 
-      unit.addEventListener("dragover", (e) => {
+      function resetAdjacentUnits() {
+        adjacentUnits.forEach((u) => {
+          player1BoardView.changeShipHintClass(u, false);
+        });
         adjacentUnits = [];
+      }
+
+      unit.addEventListener("dragover", (e) => {
         const dragging = document.querySelector(".dragging");
         const length = Number(dragging.dataset.length);
         const x = Number(unit.dataset.x);
         const y = Number(unit.dataset.y);
 
         if (length > 0) {
-          for (let i = 0; i <= length - 1; i++) {
-            adjacentUnits.push({ x: x + i, y });
+          resetAdjacentUnits();
+          if (dragging.dataset.isVertical === "true") {
+            for (let i = 0; i <= length - 1; i++) {
+              adjacentUnits.push({ x: x, y: y + i });
+            }
+          } else {
+            for (let i = 0; i <= length - 1; i++) {
+              adjacentUnits.push({ x: x + i, y });
+            }
           }
 
           const canPlace = GameModule.gameboard1.canPlaceShipAt(adjacentUnits);
@@ -118,15 +140,10 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
       });
 
       unit.addEventListener("dragleave", () => {
-        adjacentUnits.forEach((u) => {
-          player1BoardView.changeShipHintClass(u, false);
-        });
+        resetAdjacentUnits();
       });
 
       unit.addEventListener("drop", () => {
-        adjacentUnits.forEach((u) => {
-          player1BoardView.changeShipHintClass(u, false);
-        });
         const dragging = document.querySelector(".dragging");
         const length = Number(dragging.dataset.length);
 
@@ -144,6 +161,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
             }
           }
         }
+        resetAdjacentUnits();
       });
     });
   }

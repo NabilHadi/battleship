@@ -91,6 +91,10 @@ body {
   background-color: greenyellow;
 }
 
+.player-ships .ship[data-is-vertical="true"] {
+  flex-direction: column;
+}
+
 .player-ships .ship.hide-draggable-ship {
   display: none;
 }
