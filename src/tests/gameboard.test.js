@@ -5,17 +5,10 @@ describe("Gameboard Object", () => {
     expect(Gameboard(9).size).toBe(9);
   });
 
-  test("returns correct board state", () => {
+  test("returns board with length of (size * size)", () => {
     const gameboard = Gameboard(2);
-    expect(gameboard.getBoard()[0]).toMatchObject({
-      x: 0,
-      y: 0,
-    });
-    gameboard.placeShipAt({ x: 1, y: 1 });
-    expect(gameboard.getBoard()[3]).toMatchObject({
-      x: 1,
-      y: 1,
-    });
+    expect(gameboard.getBoard().length).toBe(gameboard.size * gameboard.size);
+    expect(gameboard.getBoard().length).toBe(4);
   });
 
   test("getShips function returns correct values", () => {
@@ -45,15 +38,23 @@ describe("Gameboard Object", () => {
 
   test("receiveAttack function works with no ships on board", () => {
     const gameboard = Gameboard(5);
-    expect(gameboard.receiveAttack({ x: 1, y: 1 })).toBe(true);
-    expect(gameboard.receiveAttack({ x: 3, y: 4 })).toBe(true);
+    expect(gameboard.receiveAttack({ x: 1, y: 1 })).toMatchObject({
+      isMissedAttack: true,
+    });
+    expect(gameboard.receiveAttack({ x: 3, y: 4 })).toMatchObject({
+      isMissedAttack: true,
+    });
   });
 
   test("receiveAttack returns false for already hit coordinates", () => {
     const gameboard = Gameboard(5);
-    expect(gameboard.receiveAttack({ x: 1, y: 1 })).toBe(true);
+    expect(gameboard.receiveAttack({ x: 1, y: 1 })).toMatchObject({
+      isMissedAttack: true,
+    });
     expect(gameboard.receiveAttack({ x: 1, y: 1 })).toBe(false);
-    expect(gameboard.receiveAttack({ x: 3, y: 1 })).toBe(true);
+    expect(gameboard.receiveAttack({ x: 3, y: 1 })).toMatchObject({
+      isMissedAttack: true,
+    });
     expect(gameboard.receiveAttack({ x: 3, y: 1 })).toBe(false);
   });
 
@@ -123,5 +124,15 @@ describe("Gameboard Object", () => {
     expect(gameboard.hasShipAt({ x: 0, y: 5 })).toBe(true);
     expect(gameboard.hasShipAt({ x: 5, y: 0 })).toBe(false);
     expect(gameboard.hasShipAt({ x: 4, y: 5 })).toBe(false);
+  });
+
+  test("get random valid ship coordinates returns ship with correct length", () => {
+    const gameboard = Gameboard(9);
+    let shipsArray = gameboard.getValidShipCoordinates(5);
+    expect(shipsArray.length).toBe(5);
+    shipsArray = gameboard.getValidShipCoordinates(3);
+    expect(shipsArray.length).toBe(3);
+    shipsArray = gameboard.getValidShipCoordinates(1);
+    expect(shipsArray.length).toBe(1);
   });
 });
