@@ -18,13 +18,13 @@ export const AIPlayer = function (name, id, enmeyGamebaord) {
   return {
     ...playerObj,
     play() {
-      let coordinates = nextMoves.pop();
+      let coordinates = nextMoves.shift();
       if (!coordinates) {
         coordinates = getRandomCoordinates(enmeyGamebaord.size);
       }
       let response = enmeyGamebaord.receiveAttack(coordinates);
       while (!response) {
-        coordinates = nextMoves.pop();
+        coordinates = nextMoves.shift();
         if (!coordinates) {
           coordinates = getRandomCoordinates(enmeyGamebaord.size);
         }

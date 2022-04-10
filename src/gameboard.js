@@ -137,6 +137,7 @@ const Gameboard = function (size = 0, _player = null) {
       let isValidCoordinates = false;
 
       while (!isValidCoordinates) {
+        shipCoordinates = [];
         randomCoords = getRandomCoordinates(size);
         if (randomCoords.x + length - 1 < size) {
           for (let i = 0; i < length; i++) {

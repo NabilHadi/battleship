@@ -128,11 +128,28 @@ describe("Gameboard Object", () => {
 
   test("get random valid ship coordinates returns ship with correct length", () => {
     const gameboard = Gameboard(9);
-    let shipsArray = gameboard.getValidShipCoordinates(5);
-    expect(shipsArray.length).toBe(5);
-    shipsArray = gameboard.getValidShipCoordinates(3);
-    expect(shipsArray.length).toBe(3);
-    shipsArray = gameboard.getValidShipCoordinates(1);
-    expect(shipsArray.length).toBe(1);
+    let shipsArray;
+    for (let i = 0; i < 100; i++) {
+      gameboard.resetBoard();
+      shipsArray = gameboard.getValidShipCoordinates(5);
+      expect(shipsArray.length).toBe(5);
+      gameboard.placeShipAt(...shipsArray);
+
+      shipsArray = gameboard.getValidShipCoordinates(4);
+      expect(shipsArray.length).toBe(4);
+      gameboard.placeShipAt(...shipsArray);
+
+      shipsArray = gameboard.getValidShipCoordinates(3);
+      expect(shipsArray.length).toBe(3);
+      gameboard.placeShipAt(...shipsArray);
+
+      shipsArray = gameboard.getValidShipCoordinates(3);
+      expect(shipsArray.length).toBe(3);
+      gameboard.placeShipAt(...shipsArray);
+
+      shipsArray = gameboard.getValidShipCoordinates(2);
+      expect(shipsArray.length).toBe(2);
+      gameboard.placeShipAt(...shipsArray);
+    }
   });
 });
