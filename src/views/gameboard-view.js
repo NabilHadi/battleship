@@ -1,19 +1,28 @@
 import { createHTMLElement } from "../utils";
+import ButtonView from "./button-view";
 import GridItemView from "./grid-item-view";
 
-const GameboardView = (id, classes, boardArray, playerId) => {
+const GameboardView = ({
+  id,
+  classes,
+  boardArray,
+  playerId,
+  startGameClickHandler,
+}) => {
   const gameboardDiv = createHTMLElement({ id, classes });
   const boardOverlay = createHTMLElement({
     id: `board-${playerId}-overlay`,
     classes: ["enemy-overlay", "hide"],
   });
 
-  const startGameBtn = createHTMLElement({
+  const startGameBtn = ButtonView({
     id: `start-game-btn-${playerId}`,
     classes: ["start-game-btn", "btn"],
+    textContent: "START GAME",
+    clickHandler: startGameClickHandler,
   });
-  startGameBtn.textContent = "START GAME";
-  boardOverlay.append(startGameBtn);
+
+  boardOverlay.append(startGameBtn.getView());
 
   gameboardDiv.append(boardOverlay);
 
@@ -107,8 +116,11 @@ const GameboardView = (id, classes, boardArray, playerId) => {
     getBoardItemViews() {
       return boardUnitViews;
     },
-    getStartGameBtn() {
-      return startGameBtn;
+    enableStartGameBtn() {
+      startGameBtn.enableBtn();
+    },
+    disableStartGameBtn() {
+      startGameBtn.disableBtn();
     },
   };
 };

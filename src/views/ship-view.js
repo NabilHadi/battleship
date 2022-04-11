@@ -1,6 +1,6 @@
 import { createHTMLElement } from "../utils";
 
-const ShipView = (id, classes, isVertical, isDraggable, length) => {
+const ShipView = ({ id, classes, isVertical, isDraggable, length }) => {
   const shipContainer = createHTMLElement({ id, classes });
   shipContainer.dataset.isVertical = isVertical;
   shipContainer.draggable = isDraggable;
@@ -9,6 +9,8 @@ const ShipView = (id, classes, isVertical, isDraggable, length) => {
   for (let i = 0; i < length; i++) {
     shipContainer.append(createHTMLElement());
   }
+
+  let isPlaced = false;
 
   return {
     getView() {
@@ -22,6 +24,17 @@ const ShipView = (id, classes, isVertical, isDraggable, length) => {
     },
     setIsVertical(isVertical) {
       shipContainer.dataset.isVertical = isVertical;
+    },
+    get isPlaced() {
+      return isPlaced;
+    },
+    set isPlaced(v) {
+      if (v) {
+        this.addClass("hide-draggable-ship");
+      } else {
+        this.removeClass("hide-draggable-ship");
+      }
+      isPlaced = v;
     },
   };
 };

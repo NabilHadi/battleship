@@ -3,69 +3,46 @@ import { GameModule, EventAggregator } from "./game";
 import ShipView from "./views/ship-view";
 import ButtonView from "./views/button-view";
 
-const aircraftShip = ShipView(
-  "aircraft",
-  ["ship", "draggable"],
-  false,
-  true,
-  5
-);
-const battleShip = ShipView(
-  "battleship",
-  ["ship", "draggable"],
-  false,
-  true,
-  4
-);
-const submarineShip = ShipView(
-  "submarine",
-  ["ship", "draggable"],
-  false,
-  true,
-  3
-);
-const cruiserShip = ShipView("cruiser", ["ship", "draggable"], false, true, 3);
-const destroyerShip = ShipView(
-  "destroyer",
-  ["ship", "draggable"],
-  false,
-  true,
-  2
-);
+const aircraftShip = ShipView({
+  id: "aircraft",
+  classes: ["ship", "draggable"],
+  isVertical: false,
+  isDraggable: true,
+  length: 5,
+});
+const battleShip = ShipView({
+  id: "battleship",
+  classes: ["ship", "draggable"],
+  isVertical: false,
+  isDraggable: true,
+  length: 4,
+});
+const submarineShip = ShipView({
+  id: "submarine",
+  classes: ["ship", "draggable"],
+  isVertical: false,
+  isDraggable: true,
+  length: 3,
+});
+const cruiserShip = ShipView({
+  id: "cruiser",
+  classes: ["ship", "draggable"],
+  isVertical: false,
+  isDraggable: true,
+  length: 3,
+});
+const destroyerShip = ShipView({
+  id: "destroyer",
+  classes: ["ship", "draggable"],
+  isVertical: false,
+  isDraggable: true,
+  length: 2,
+});
 
 // DOM Controller
 const DOMController = (function (player1ContainerView, player2ContainerView) {
   let player1BoardView;
   let player2BoardView;
-
-  const shipsViews = [
-    aircraftShip,
-    battleShip,
-    submarineShip,
-    cruiserShip,
-    destroyerShip,
-  ];
-
-  const outputDiv = document.querySelector(".output-msg");
-
-  // render boards function
-  function renderBoards() {
-    player1BoardView = GameboardView(
-      "first-player-board",
-      ["board"],
-      GameModule.gameboard1.getBoard(),
-      GameModule.gameboard1.getPlayerId()
-    );
-    player2BoardView = GameboardView(
-      "second-player-board",
-      ["board"],
-      GameModule.gameboard2.getBoard(),
-      GameModule.gameboard2.getPlayerId()
-    );
-
-    player1ContainerView.append(player1BoardView.getView());
-    player2ContainerView.append(player2BoardView.getView());
-  }
 
   const restartGameBtn = ButtonView({
     id: "restart-game-btn",
@@ -92,13 +69,23 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
   );
 
   firstPlayerShipsContainer.append(
-    restartGameBtn.getView(),
-    resetShipsBtn.getView()
+    resetShipsBtn.getView(),
+    restartGameBtn.getView()
   );
+
+  const shipsViews = [
+    aircraftShip,
+    battleShip,
+    submarineShip,
+    cruiserShip,
+    destroyerShip,
+  ];
+
+  const outputDiv = document.querySelector(".output-msg");
 
   function setupDraggableShips() {
     shipsViews.forEach((shipView) => {
-      shipView.removeClass("hide-draggable-ship");
+      shipView.isPlaced = false;
     });
 
     shipsViews.forEach((shipView) => {
@@ -109,15 +96,15 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
 
       shipView.getView().addEventListener("drag", (e) => {
         if (e.shiftKey) {
-          shipView.getView().dataset.isVertical = true;
+          shipView.setIsVertical(true);
         } else {
-          shipView.getView().dataset.isVertical = false;
+          shipView.setIsVertical(false);
         }
       });
 
       shipView.getView().addEventListener("dragend", (e) => {
         e.target.classList.remove("dragging");
-        shipView.getView().dataset.isVertical = false;
+        shipView.setIsVertical(false);
       });
     });
 
@@ -181,7 +168,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
               (shipView) => shipView.getView().id === dragging.id
             );
             if (shipView) {
-              shipView.addClass("hide-draggable-ship");
+              shipView.isPlaced = true;
             }
           }
         }
@@ -224,6 +211,37 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     player2BoardView.getView().removeEventListener("click", boardClickHandler);
   }
 
+  // render boards function
+  function renderBoards() {
+    player1BoardView = GameboardView({
+      id: "first-player-board",
+      classes: ["board"],
+      boardArray: GameModule.gameboard1.getBoard(),
+      playerId: GameModule.gameboard1.getPlayerId(),
+      startGameClickHandler: null,
+    });
+
+    player2BoardView = GameboardView({
+      id: "second-player-board",
+      classes: ["board"],
+      boardArray: GameModule.gameboard2.getBoard(),
+      playerId: GameModule.gameboard2.getPlayerId(),
+      startGameClickHandler: () => {
+        const isAllShipsPlaced = shipsViews.every(
+          (shipsView) => shipsView.isPlaced
+        );
+        if (isAllShipsPlaced) {
+          EventAggregator.publish(GameModule.GAME_START_EVENT);
+        } else {
+          outputDiv.textContent = "Please place all ships to start the game";
+        }
+      },
+    });
+
+    player1ContainerView.append(player1BoardView.getView());
+    player2ContainerView.append(player2BoardView.getView());
+  }
+
   EventAggregator.subscribe(GameModule.PRE_GAME_STAGE_EVENT, () => {
     renderBoards();
   });
@@ -241,16 +259,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     setupDraggableShips();
     resetShipsBtn.enableBtn();
     player2BoardView.showOverLay();
-    player2BoardView.getStartGameBtn().addEventListener("click", () => {
-      const isAllShipsPlaced = shipsViews.every((shipsView) =>
-        shipsView.getView().classList.contains("hide-draggable-ship")
-      );
-      if (isAllShipsPlaced) {
-        EventAggregator.publish(GameModule.GAME_START_EVENT);
-      } else {
-        outputDiv.textContent = "Please place all ships to start the game";
-      }
-    });
+    player2BoardView.enableStartGameBtn();
   });
 
   EventAggregator.subscribe(GameModule.GAME_START_EVENT, () => {
