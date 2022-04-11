@@ -1,65 +1,11 @@
+import EventAggregator, {
+  GAME_END_EVENT,
+  COMPUTER_PLAYED_EVENT,
+} from "./eventAggregator";
 import Gameboard from "./gameboard";
 import Player, { AIPlayer } from "./player";
 
-export const EventAggregator = (function () {
-  function Event(name) {
-    this._handlers = [];
-    this.name = name;
-  }
-  Event.prototype.addHandler = function (handler) {
-    this._handlers.push(handler);
-  };
-  Event.prototype.removeHandler = function (handler) {
-    this._handlers = this._handlers.filter((h) => {
-      h !== handler;
-    });
-  };
-  Event.prototype.fire = function (eventArgs) {
-    this._handlers.forEach(function (h) {
-      h(eventArgs);
-    });
-  };
-
-  const events = [];
-
-  function getEvent(eventName) {
-    return events.find((e) => {
-      return e.name === eventName;
-    });
-  }
-
-  return {
-    publish(eventName, eventArgs) {
-      let event = getEvent(eventName);
-
-      if (!event) {
-        event = new Event(eventName);
-        events.push(event);
-      }
-
-      event.fire(eventArgs);
-    },
-    subscribe(eventName, handler) {
-      let event = getEvent(eventName);
-
-      if (!event) {
-        event = new Event(eventName);
-        events.push(event);
-      }
-
-      event.addHandler(handler);
-    },
-  };
-})();
-
-export const GameModule = (function (boardsSize) {
-  const COMPUTER_PLAYED_EVENT = "computerPlayed";
-  const PRE_GAME_STAGE_EVENT = "preGame";
-  const SHIP_PLACEMENT_STAGE_EVENT = "shipPlacement";
-  const GAME_START_EVENT = "gameStart";
-  const GAME_END_EVENT = "gameEnded";
-  const RESTART_GAME_EVENT = "restartGame";
-
+const GameModule = (function (boardsSize) {
   const player1 = Player({ name: "Player1", id: 1 });
   const gameboard1 = Gameboard(boardsSize, player1);
 
@@ -108,23 +54,7 @@ export const GameModule = (function (boardsSize) {
       }
       return false;
     },
-    get COMPUTER_PLAYED_EVENT() {
-      return COMPUTER_PLAYED_EVENT;
-    },
-    get GAME_END_EVENT() {
-      return GAME_END_EVENT;
-    },
-    get PRE_GAME_STAGE_EVENT() {
-      return PRE_GAME_STAGE_EVENT;
-    },
-    get SHIP_PLACEMENT_STAGE_EVENT() {
-      return SHIP_PLACEMENT_STAGE_EVENT;
-    },
-    get GAME_START_EVENT() {
-      return GAME_START_EVENT;
-    },
-    get RESTART_GAME_EVENT() {
-      return RESTART_GAME_EVENT;
-    },
   };
 })(9);
+
+export default GameModule;

@@ -1,5 +1,12 @@
 import GameboardView from "./views/gameboard-view";
-import { GameModule, EventAggregator } from "./game";
+import GameModule from "./game";
+import EventAggregator, {
+  COMPUTER_PLAYED_EVENT,
+  GAME_END_EVENT,
+  PRE_GAME_STAGE_EVENT,
+  RESTART_GAME_EVENT,
+  SHIP_PLACEMENT_STAGE_EVENT,
+} from "./eventAggregator";
 import ShipView from "./views/ship-view";
 import ButtonView from "./views/button-view";
 
@@ -49,7 +56,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     classes: ["btn"],
     textContent: "Restart Game",
     clickHandler: (e) => {
-      EventAggregator.publish(GameModule.RESTART_GAME_EVENT, e);
+      EventAggregator.publish(RESTART_GAME_EVENT, e);
     },
   });
 
@@ -242,11 +249,12 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     player2ContainerView.append(player2BoardView.getView());
   }
 
-  EventAggregator.subscribe(GameModule.PRE_GAME_STAGE_EVENT, () => {
+  EventAggregator.subscribe(PRE_GAME_STAGE_EVENT, () => {
     renderBoards();
   });
 
-  EventAggregator.subscribe(GameModule.SHIP_PLACEMENT_STAGE_EVENT, () => {
+  EventAggregator.subscribe(SHIP_PLACEMENT_STAGE_EVENT, () => {
+    GameModule.placeShipsOnBoards();
     // disable restart game button
     restartGameBtn.disableBtn();
     const p1ShipsContainer = document.querySelector(
@@ -275,12 +283,12 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     GameModule.isFirstPlayerTurn = true;
   });
 
-  EventAggregator.subscribe(GameModule.GAME_END_EVENT, (event) => {
+  EventAggregator.subscribe(GAME_END_EVENT, (event) => {
     removeClickHandlers();
     outputDiv.textContent = `*** ${event.winner.name} WON!! ***`;
   });
 
-  EventAggregator.subscribe(GameModule.COMPUTER_PLAYED_EVENT, (event) => {
+  EventAggregator.subscribe(COMPUTER_PLAYED_EVENT, (event) => {
     if (event.response.isMissedAttack) {
       player1BoardView.changeHitStateFor(event.coordinates, true);
       GameModule.isFirstPlayerTurn = true;
@@ -290,16 +298,15 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     }
   });
 
-  EventAggregator.subscribe(GameModule.RESTART_GAME_EVENT, () => {
+  EventAggregator.subscribe(RESTART_GAME_EVENT, () => {
     // reset boards
     GameModule.gameboard1.resetBoard();
     GameModule.gameboard2.resetBoard();
     player1BoardView.resetBoard();
     player2BoardView.resetBoard();
-    GameModule.placeShipsOnBoards();
     outputDiv.textContent = "";
     // show overlay
-    EventAggregator.publish(GameModule.SHIP_PLACEMENT_STAGE_EVENT);
+    EventAggregator.publish(SHIP_PLACEMENT_STAGE_EVENT);
   });
 
   return {
