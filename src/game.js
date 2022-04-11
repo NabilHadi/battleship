@@ -81,11 +81,7 @@ export const GameModule = (function (boardsSize) {
     },
     nextPlayerTurn() {
       isFirstPlayerTurn = false;
-      if (gameboard1.isAllShipsSunk()) {
-        EventAggregator.publish(GAME_END_EVENT, { winner: computerPlayer });
-      } else if (gameboard2.isAllShipsSunk()) {
-        EventAggregator.publish(GAME_END_EVENT, { winner: player1 });
-      } else {
+      if (!this.checkForWinner()) {
         // computer plays too fast, gotta slow it down a bit
         setTimeout(() => {
           EventAggregator.publish(COMPUTER_PLAYED_EVENT, computerPlayer.play());
@@ -101,6 +97,16 @@ export const GameModule = (function (boardsSize) {
       gameboard2.placeShipAt(...gameboard1.getValidShipCoordinates(3));
       gameboard2.placeShipAt(...gameboard1.getValidShipCoordinates(3));
       gameboard2.placeShipAt(...gameboard1.getValidShipCoordinates(2));
+    },
+    checkForWinner() {
+      if (gameboard1.isAllShipsSunk()) {
+        EventAggregator.publish(GAME_END_EVENT, { winner: computerPlayer });
+        return true;
+      } else if (gameboard2.isAllShipsSunk()) {
+        EventAggregator.publish(GAME_END_EVENT, { winner: player1 });
+        return true;
+      }
+      return false;
     },
     get COMPUTER_PLAYED_EVENT() {
       return COMPUTER_PLAYED_EVENT;

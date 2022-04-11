@@ -194,10 +194,11 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
 
       if (respone.isMissedAttack) {
         player2BoardView.changeHitStateFor({ x, y }, true);
+        GameModule.nextPlayerTurn();
       } else {
         player2BoardView.changeHitStateFor({ x, y }, false);
+        GameModule.checkForWinner();
       }
-      GameModule.nextPlayerTurn();
     }
   }
 
@@ -264,6 +265,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     outputDiv.textContent = "Game started";
     // enable reset game button
     setupRestartGameBtn();
+    GameModule.isFirstPlayerTurn = true;
   });
 
   EventAggregator.subscribe(GameModule.GAME_END_EVENT, (event) => {
@@ -274,10 +276,11 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
   EventAggregator.subscribe(GameModule.COMPUTER_PLAYED_EVENT, (event) => {
     if (event.response.isMissedAttack) {
       player1BoardView.changeHitStateFor(event.coordinates, true);
+      GameModule.isFirstPlayerTurn = true;
     } else {
       player1BoardView.changeHitStateFor(event.coordinates, false);
+      GameModule.nextPlayerTurn();
     }
-    GameModule.isFirstPlayerTurn = true;
   });
 
   EventAggregator.subscribe(GameModule.RESTART_GAME_EVENT, () => {
