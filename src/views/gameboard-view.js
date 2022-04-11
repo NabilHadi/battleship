@@ -89,6 +89,12 @@ const GameboardView = (id, classes, boardArray, playerId) => {
         unitView.removeHasShip();
       });
     },
+    resetBoard() {
+      boardUnitViews.forEach((unitView) => {
+        unitView.removeHasShip();
+        unitView.removeIsHit();
+      });
+    },
     showOverLay() {
       boardOverlay.classList.remove("hide");
     },

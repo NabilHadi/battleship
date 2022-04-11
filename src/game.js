@@ -58,6 +58,7 @@ export const GameModule = (function (boardsSize) {
   const SHIP_PLACEMENT_STAGE_EVENT = "shipPlacement";
   const GAME_START_EVENT = "gameStart";
   const GAME_END_EVENT = "gameEnded";
+  const RESTART_GAME_EVENT = "restartGame";
 
   const player1 = Player({ name: "Player1", id: 1 });
   const gameboard1 = Gameboard(boardsSize, player1);
@@ -115,6 +116,9 @@ export const GameModule = (function (boardsSize) {
     },
     get GAME_START_EVENT() {
       return GAME_START_EVENT;
+    },
+    get RESTART_GAME_EVENT() {
+      return RESTART_GAME_EVENT;
     },
   };
 })(9);

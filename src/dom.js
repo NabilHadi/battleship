@@ -47,6 +47,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
 
   const outputDiv = document.querySelector(".output-msg");
   const resetShipsBtn = document.querySelector("#reset-ships-btn");
+  const restartGameBtn = document.querySelector("#restart-game-btn");
 
   // render boards function
   function renderBoards() {
@@ -94,6 +95,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
 
       shipView.getView().addEventListener("dragend", (e) => {
         e.target.classList.remove("dragging");
+        shipView.getView().dataset.isVertical = false;
       });
     });
 
@@ -172,7 +174,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
   }
 
   function disableResetShipBtn() {
-    resetShipsBtn.addEventListener("click", resetShipsBtnHandler);
+    resetShipsBtn.removeEventListener("click", resetShipsBtnHandler);
     resetShipsBtn.setAttribute("disabled", "");
   }
 
@@ -209,8 +211,27 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     player2BoardView.getView().removeEventListener("click", boardClickHandler);
   }
 
-  EventAggregator.subscribe(GameModule.SHIP_PLACEMENT_STAGE_EVENT, () => {
+  function restartGameHandler(e) {
+    EventAggregator.publish(GameModule.RESTART_GAME_EVENT, e);
+  }
+
+  function setupRestartGameBtn() {
+    restartGameBtn.removeAttribute("disabled");
+    restartGameBtn.addEventListener("click", restartGameHandler);
+  }
+
+  function disableRestartGameBtn() {
+    restartGameBtn.setAttribute("disabled", "");
+    restartGameBtn.removeEventListener("click", restartGameHandler);
+  }
+
+  EventAggregator.subscribe(GameModule.PRE_GAME_STAGE_EVENT, () => {
     renderBoards();
+  });
+
+  EventAggregator.subscribe(GameModule.SHIP_PLACEMENT_STAGE_EVENT, () => {
+    // disable reset game button
+    disableRestartGameBtn();
     const p1ShipsContainer = document.querySelector(
       "#first-player-ships #ships-container"
     );
@@ -241,6 +262,8 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     // set up click handlers
     setupClickHandlers();
     outputDiv.textContent = "Game started";
+    // enable reset game button
+    setupRestartGameBtn();
   });
 
   EventAggregator.subscribe(GameModule.GAME_END_EVENT, (event) => {
@@ -257,6 +280,18 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     GameModule.isFirstPlayerTurn = true;
   });
 
+  EventAggregator.subscribe(GameModule.RESTART_GAME_EVENT, () => {
+    // reset boards
+    GameModule.gameboard1.resetBoard();
+    GameModule.gameboard2.resetBoard();
+    player1BoardView.resetBoard();
+    player2BoardView.resetBoard();
+    GameModule.placeShipsOnBoards();
+    outputDiv.textContent = "";
+    // show overlay
+    EventAggregator.publish(GameModule.SHIP_PLACEMENT_STAGE_EVENT);
+  });
+
   return {
     renderBoards,
     setupClickHandlers,
@@ -264,6 +299,8 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     setupDraggableShips,
     setupResetShipsBtn,
     disableResetShipBtn,
+    setupRestartGameBtn,
+    disableRestartGameBtn,
   };
 })(
   document.querySelector("#first-player-container"),

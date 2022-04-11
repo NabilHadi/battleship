@@ -16,6 +16,7 @@ body {
   cursor: pointer;
   font-weight: 600;
   color: #444;
+  line-height: 1.5;
 }
 
 .btn[disabled] {
@@ -78,12 +79,16 @@ body {
   display: grid;
   gap: 10px;
   text-align: center;
-  grid-template-rows: max-content 1fr;
+  grid-template-rows: max-content max-content 1fr;
 }
 
 .player-ships #reset-ships-btn {
-  margin-top: 29px;
-  line-height: 1.5;
+  background-color: rgb(179, 220, 117);
+}
+
+.player-ships #restart-game-btn {
+  margin-top: 30px;
+  background-color: #73a7c1;
 }
 
 .player-ships .ship {
