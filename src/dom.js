@@ -3,6 +3,7 @@ import GameModule from "./game";
 import EventAggregator, {
   COMPUTER_PLAYED_EVENT,
   GAME_END_EVENT,
+  GAME_START_EVENT,
   PRE_GAME_STAGE_EVENT,
   RESTART_GAME_EVENT,
   SHIP_PLACEMENT_STAGE_EVENT,
@@ -238,7 +239,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
           (shipsView) => shipsView.isPlaced
         );
         if (isAllShipsPlaced) {
-          EventAggregator.publish(GameModule.GAME_START_EVENT);
+          EventAggregator.publish(GAME_START_EVENT);
         } else {
           outputDiv.textContent = "Please place all ships to start the game";
         }
@@ -270,7 +271,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     player2BoardView.enableStartGameBtn();
   });
 
-  EventAggregator.subscribe(GameModule.GAME_START_EVENT, () => {
+  EventAggregator.subscribe(GAME_START_EVENT, () => {
     // disable resetShips button
     resetShipsBtn.disableBtn();
     // hide enemyOverlay
