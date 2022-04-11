@@ -4,12 +4,12 @@ import EventAggregator, {
   COMPUTER_PLAYED_EVENT,
   GAME_END_EVENT,
   GAME_START_EVENT,
-  PRE_GAME_STAGE_EVENT,
   RESTART_GAME_EVENT,
   SHIP_PLACEMENT_STAGE_EVENT,
 } from "./eventAggregator";
 import ShipView from "./views/ship-view";
 import ButtonView from "./views/button-view";
+import { createHTMLElement } from "./utils";
 
 const aircraftShip = ShipView({
   id: "aircraft",
@@ -67,7 +67,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     textContent: "Reset Ships",
     clickHandler: () => {
       player1BoardView.removeAllShips();
-      GameModule.gameboard1.resetBoard();
+      GameModule.player1Gameboard.resetBoard();
       setupDraggableShips();
     },
   });
@@ -148,7 +148,8 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
             }
           }
 
-          const canPlace = GameModule.gameboard1.canPlaceShipAt(adjacentUnits);
+          const canPlace =
+            GameModule.player1Gameboard.canPlaceShipAt(adjacentUnits);
           if (canPlace) {
             e.preventDefault();
             adjacentUnits.forEach((u) => {
@@ -167,7 +168,9 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
         const length = Number(dragging.dataset.length);
 
         if (length > 0) {
-          const canPlace = GameModule.gameboard1.placeShipAt(...adjacentUnits);
+          const canPlace = GameModule.player1Gameboard.placeShipAt(
+            ...adjacentUnits
+          );
           if (canPlace) {
             adjacentUnits.forEach((u) => {
               player1BoardView.changeShipStateFor(u, true);
@@ -196,7 +199,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     if (GameModule.isFirstPlayerTurn) {
       if (playerID !== 2) return;
 
-      const respone = GameModule.gameboard2.receiveAttack({ x, y });
+      const respone = GameModule.player2Gameboard.receiveAttack({ x, y });
       if (!respone) return;
 
       if (respone.isMissedAttack) {
@@ -224,16 +227,16 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     player1BoardView = GameboardView({
       id: "first-player-board",
       classes: ["board"],
-      boardArray: GameModule.gameboard1.getBoard(),
-      playerId: GameModule.gameboard1.getPlayerId(),
+      boardArray: GameModule.player1Gameboard.getBoard(),
+      playerId: GameModule.player1Gameboard.getPlayerId(),
       startGameClickHandler: null,
     });
 
     player2BoardView = GameboardView({
       id: "second-player-board",
       classes: ["board"],
-      boardArray: GameModule.gameboard2.getBoard(),
-      playerId: GameModule.gameboard2.getPlayerId(),
+      boardArray: GameModule.player2Gameboard.getBoard(),
+      playerId: GameModule.player2Gameboard.getPlayerId(),
       startGameClickHandler: () => {
         const isAllShipsPlaced = shipsViews.every(
           (shipsView) => shipsView.isPlaced
@@ -250,9 +253,28 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     player2ContainerView.append(player2BoardView.getView());
   }
 
-  EventAggregator.subscribe(PRE_GAME_STAGE_EVENT, () => {
-    renderBoards();
+  const gameContinaer = document.querySelector("#game-container");
+  const gameOverlay = createHTMLElement({
+    id: "game-overlay",
+    classes: ["game-overlay", "hide"],
   });
+  gameOverlay.append(
+    createHTMLElement({
+      type: "label",
+      id: "name-label",
+      textContent: "Enter your name",
+    }),
+    createHTMLElement({ type: "input", id: "name-input", classes: ["input"] })
+  );
+  gameContinaer.append(gameOverlay);
+
+  function showGameOverlay() {
+    gameOverlay.classList.remove("hide");
+  }
+
+  function hideGameOverlay() {
+    gameOverlay.classList.add("hide");
+  }
 
   EventAggregator.subscribe(SHIP_PLACEMENT_STAGE_EVENT, () => {
     GameModule.placeShipsOnBoards();
@@ -301,8 +323,8 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
 
   EventAggregator.subscribe(RESTART_GAME_EVENT, () => {
     // reset boards
-    GameModule.gameboard1.resetBoard();
-    GameModule.gameboard2.resetBoard();
+    GameModule.player1Gameboard.resetBoard();
+    GameModule.player2Gameboard.resetBoard();
     player1BoardView.resetBoard();
     player2BoardView.resetBoard();
     outputDiv.textContent = "";
@@ -315,6 +337,8 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     setupClickHandlers,
     removeClickHandlers,
     setupDraggableShips,
+    showGameOverlay,
+    hideGameOverlay,
   };
 })(
   document.querySelector("#first-player-container"),
