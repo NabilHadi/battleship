@@ -57,9 +57,11 @@ export const createHTMLElement = ({
   type = "div",
   id = "",
   classes = [],
+  textContent = "",
 } = {}) => {
   const e = document.createElement(type);
   e.id = id;
   e.classList.add(...classes);
+  e.textContent = textContent;
   return e;
 };

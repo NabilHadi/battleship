@@ -1,6 +1,7 @@
 import GameboardView from "./views/gameboard-view";
 import { GameModule, EventAggregator } from "./game";
 import ShipView from "./views/ship-view";
+import ButtonView from "./views/button-view";
 
 const aircraftShip = ShipView(
   "aircraft",
@@ -46,8 +47,6 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
   ];
 
   const outputDiv = document.querySelector(".output-msg");
-  const resetShipsBtn = document.querySelector("#reset-ships-btn");
-  const restartGameBtn = document.querySelector("#restart-game-btn");
 
   // render boards function
   function renderBoards() {
@@ -68,11 +67,34 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     player2ContainerView.append(player2BoardView.getView());
   }
 
-  function resetShipsBtnHandler() {
-    player1BoardView.removeAllShips();
-    GameModule.gameboard1.resetBoard();
-    setupDraggableShips();
-  }
+  const restartGameBtn = ButtonView({
+    id: "restart-game-btn",
+    classes: ["btn"],
+    textContent: "Restart Game",
+    clickHandler: (e) => {
+      EventAggregator.publish(GameModule.RESTART_GAME_EVENT, e);
+    },
+  });
+
+  const resetShipsBtn = ButtonView({
+    id: "reset-ships-btn",
+    classes: ["btn"],
+    textContent: "Reset Ships",
+    clickHandler: () => {
+      player1BoardView.removeAllShips();
+      GameModule.gameboard1.resetBoard();
+      setupDraggableShips();
+    },
+  });
+
+  const firstPlayerShipsContainer = document.querySelector(
+    "#first-player-ships"
+  );
+
+  firstPlayerShipsContainer.append(
+    restartGameBtn.getView(),
+    resetShipsBtn.getView()
+  );
 
   function setupDraggableShips() {
     shipsViews.forEach((shipView) => {
@@ -168,16 +190,6 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     });
   }
 
-  function setupResetShipsBtn() {
-    resetShipsBtn.removeAttribute("disabled");
-    resetShipsBtn.addEventListener("click", resetShipsBtnHandler);
-  }
-
-  function disableResetShipBtn() {
-    resetShipsBtn.removeEventListener("click", resetShipsBtnHandler);
-    resetShipsBtn.setAttribute("disabled", "");
-  }
-
   function boardClickHandler(evn) {
     if (!evn.target.dataset.x && !evn.target.dataset.y) return;
     evn.stopPropagation();
@@ -212,27 +224,13 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     player2BoardView.getView().removeEventListener("click", boardClickHandler);
   }
 
-  function restartGameHandler(e) {
-    EventAggregator.publish(GameModule.RESTART_GAME_EVENT, e);
-  }
-
-  function setupRestartGameBtn() {
-    restartGameBtn.removeAttribute("disabled");
-    restartGameBtn.addEventListener("click", restartGameHandler);
-  }
-
-  function disableRestartGameBtn() {
-    restartGameBtn.setAttribute("disabled", "");
-    restartGameBtn.removeEventListener("click", restartGameHandler);
-  }
-
   EventAggregator.subscribe(GameModule.PRE_GAME_STAGE_EVENT, () => {
     renderBoards();
   });
 
   EventAggregator.subscribe(GameModule.SHIP_PLACEMENT_STAGE_EVENT, () => {
-    // disable reset game button
-    disableRestartGameBtn();
+    // disable restart game button
+    restartGameBtn.disableBtn();
     const p1ShipsContainer = document.querySelector(
       "#first-player-ships #ships-container"
     );
@@ -241,7 +239,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
       ...shipsViews.map((shipView) => shipView.getView())
     );
     setupDraggableShips();
-    setupResetShipsBtn();
+    resetShipsBtn.enableBtn();
     player2BoardView.showOverLay();
     player2BoardView.getStartGameBtn().addEventListener("click", () => {
       const isAllShipsPlaced = shipsViews.every((shipsView) =>
@@ -257,14 +255,14 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
 
   EventAggregator.subscribe(GameModule.GAME_START_EVENT, () => {
     // disable resetShips button
-    disableResetShipBtn();
+    resetShipsBtn.disableBtn();
     // hide enemyOverlay
     player2BoardView.hideOverlay();
     // set up click handlers
     setupClickHandlers();
     outputDiv.textContent = "Game started";
-    // enable reset game button
-    setupRestartGameBtn();
+    // enable restart game button
+    restartGameBtn.enableBtn();
     GameModule.isFirstPlayerTurn = true;
   });
 
@@ -300,10 +298,6 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     setupClickHandlers,
     removeClickHandlers,
     setupDraggableShips,
-    setupResetShipsBtn,
-    disableResetShipBtn,
-    setupRestartGameBtn,
-    disableRestartGameBtn,
   };
 })(
   document.querySelector("#first-player-container"),

@@ -53,12 +53,12 @@ body {
 }
 
 #first-player-ships {
-  grid-row: 2/3;
+  grid-row: 2/4;
   grid-column: 1/2;
 }
 
 #second-player-ships {
-  grid-row: 2/3;
+  grid-row: 2/4;
   grid-column: 4/5;
 }
 
@@ -79,7 +79,7 @@ body {
   display: grid;
   gap: 10px;
   text-align: center;
-  grid-template-rows: max-content max-content 1fr;
+  grid-template-rows: 1fr max-content max-content max-content;
 }
 
 .player-ships #reset-ships-btn {
@@ -88,6 +88,10 @@ body {
 
 .player-ships #restart-game-btn {
   background-color: #73a7c1;
+}
+
+.player-ships #random-ships-placement-btn {
+  background-color: rgb(179, 220, 117);
 }
 
 .player-ships .ship {
