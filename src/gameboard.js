@@ -30,22 +30,6 @@ const Gameboard = function (size = 0, _player = null) {
     }
   }
 
-  const canPlaceShipAt = (coordinatesArray) => {
-    if (!isWithinBoardRange(coordinatesArray, size)) {
-      return false;
-    }
-
-    if (
-      coordinatesArray.some((coords) => {
-        return getShipAt(coords, shipsArray);
-      })
-    ) {
-      return false;
-    }
-
-    return true;
-  };
-
   const canAttackAt = (coordinates) => {
     if (!isWithinBoardRange([coordinates], size)) {
       return false;
@@ -89,10 +73,11 @@ const Gameboard = function (size = 0, _player = null) {
       return true;
     },
     placeShipAt(...coordinatesArray) {
-      if (!canPlaceShipAt(coordinatesArray)) return false;
+      if (!this.canPlaceShipAt(coordinatesArray)) return false;
 
       const ship = Ship(coordinatesArray);
       shipsArray.push(ship);
+
       return true;
     },
     getBoard() {
@@ -156,7 +141,7 @@ const Gameboard = function (size = 0, _player = null) {
             shipCoordinates.push({ x: randomCoords.x, y: randomCoords.y - i });
           }
         }
-        isValidCoordinates = canPlaceShipAt(shipCoordinates);
+        isValidCoordinates = this.canPlaceShipAt(shipCoordinates);
       }
       return shipCoordinates;
     },

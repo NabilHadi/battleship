@@ -76,11 +76,6 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     "#first-player-ships"
   );
 
-  firstPlayerShipsContainer.append(
-    resetShipsBtn.getView(),
-    restartGameBtn.getView()
-  );
-
   const shipsViews = [
     aircraftShip,
     battleShip,
@@ -88,6 +83,32 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     cruiserShip,
     destroyerShip,
   ];
+
+  const randomShipBtn = ButtonView({
+    id: "random-ships-btn",
+    classes: ["btn"],
+    textContent: "Random",
+    clickHandler: () => {
+      player1BoardView.removeAllShips();
+      GameModule.player1Gameboard.resetBoard();
+      shipsViews.forEach((shipView) => {
+        const coordinates = GameModule.player1Gameboard.getValidShipCoordinates(
+          Number(shipView.getView().dataset.length)
+        );
+        GameModule.player1Gameboard.placeShipAt(...coordinates);
+        shipView.isPlaced = true;
+        coordinates.forEach((c) => {
+          player1BoardView.changeShipStateFor(c, true);
+        });
+      });
+    },
+  });
+
+  firstPlayerShipsContainer.append(
+    randomShipBtn.getView(),
+    resetShipsBtn.getView(),
+    restartGameBtn.getView()
+  );
 
   const outputDiv = document.querySelector(".output-msg");
 
@@ -278,6 +299,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
 
   EventAggregator.subscribe(SHIP_PLACEMENT_STAGE_EVENT, () => {
     GameModule.placeShipsOnBoards();
+    randomShipBtn.enableBtn();
     // disable restart game button
     restartGameBtn.disableBtn();
     const p1ShipsContainer = document.querySelector(
@@ -294,6 +316,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
   });
 
   EventAggregator.subscribe(GAME_START_EVENT, () => {
+    randomShipBtn.disableBtn();
     // disable resetShips button
     resetShipsBtn.disableBtn();
     // hide enemyOverlay
