@@ -226,6 +226,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
       if (respone.isMissedAttack) {
         player2BoardView.changeHitStateFor({ x, y }, true);
         GameModule.nextPlayerTurn();
+        showMessage("Enemy turn to attack");
       } else {
         player2BoardView.changeHitStateFor({ x, y }, false);
         GameModule.checkForWinner();
@@ -297,6 +298,10 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     gameOverlay.classList.add("hide");
   }
 
+  function showMessage(msg) {
+    outputDiv.textContent = msg;
+  }
+
   EventAggregator.subscribe(SHIP_PLACEMENT_STAGE_EVENT, () => {
     GameModule.placeShipsOnBoards();
     randomShipBtn.enableBtn();
@@ -327,6 +332,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     // enable restart game button
     restartGameBtn.enableBtn();
     GameModule.isFirstPlayerTurn = true;
+    showMessage("Your turn to attack");
   });
 
   EventAggregator.subscribe(GAME_END_EVENT, (event) => {
@@ -338,8 +344,10 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     if (event.response.isMissedAttack) {
       player1BoardView.changeHitStateFor(event.coordinates, true);
       GameModule.isFirstPlayerTurn = true;
+      showMessage("Your turn to attack");
     } else {
       player1BoardView.changeHitStateFor(event.coordinates, false);
+      showMessage("Enemy turn to attack");
       GameModule.nextPlayerTurn();
     }
   });
@@ -362,6 +370,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
     setupDraggableShips,
     showGameOverlay,
     hideGameOverlay,
+    showMessage,
   };
 })(
   document.querySelector("#first-player-container"),
