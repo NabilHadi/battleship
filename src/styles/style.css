@@ -167,8 +167,8 @@ body {
 .player-container .board {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(9, minmax(40px, 1fr));
-  grid-template-rows: repeat(9, minmax(40px, 1fr));
+  grid-template-columns: repeat(10, minmax(40px, 1fr));
+  grid-template-rows: repeat(10, minmax(40px, 1fr));
   justify-content: center;
   align-items: center;
   background-color: #c1a18a;

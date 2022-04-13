@@ -7,11 +7,11 @@ import EventAggregator, {
 import Player, { AIPlayer } from "./player";
 import Gameboard from "./gameboard";
 
-let player1 = Player({ name: "Player1", id: 1 });
-let player1Gameboard = Gameboard(9, player1);
+let player1 = Player({ name: "You", id: 1 });
+let player1Gameboard = Gameboard(10, player1);
 
 let player2 = AIPlayer("Computer", 2, player1Gameboard);
-let player2Gameboard = Gameboard(9, player2);
+let player2Gameboard = Gameboard(10, player2);
 
 EventAggregator.publish(PRE_GAME_STAGE_EVENT, {
   p1: player1,
