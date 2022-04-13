@@ -116,7 +116,7 @@ const Gameboard = function (size = 0, _player = null) {
     getPlayerId() {
       return _player.id;
     },
-    getValidShipCoordinates(length) {
+    getValidShipCoordinatesHZ(length) {
       let shipCoordinates = [];
       let randomCoords = getRandomCoordinates(size);
       let isValidCoordinates = false;
@@ -132,7 +132,20 @@ const Gameboard = function (size = 0, _player = null) {
           for (let i = length - 1; i >= 0; i--) {
             shipCoordinates.push({ x: randomCoords.x - i, y: randomCoords.y });
           }
-        } else if (randomCoords.y + length - 1 < size) {
+        }
+        isValidCoordinates = this.canPlaceShipAt(shipCoordinates);
+      }
+      return shipCoordinates;
+    },
+    getValidShipCoordinatesVR(length) {
+      let shipCoordinates = [];
+      let randomCoords = getRandomCoordinates(size);
+      let isValidCoordinates = false;
+
+      while (!isValidCoordinates) {
+        shipCoordinates = [];
+        randomCoords = getRandomCoordinates(size);
+        if (randomCoords.y + length - 1 < size) {
           for (let i = 0; i < length; i++) {
             shipCoordinates.push({ x: randomCoords.x, y: randomCoords.y + i });
           }
@@ -144,6 +157,11 @@ const Gameboard = function (size = 0, _player = null) {
         isValidCoordinates = this.canPlaceShipAt(shipCoordinates);
       }
       return shipCoordinates;
+    },
+    getValidShipCoordinates(length) {
+      return Math.floor(Math.random() * 2) === 0
+        ? this.getValidShipCoordinatesHZ(length)
+        : this.getValidShipCoordinatesVR(length);
     },
   };
 };
