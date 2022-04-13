@@ -51,7 +51,7 @@ const GameModule = (function () {
           if (player1Gameboard.isAllShipsSunk()) {
             EventAggregator.publish(GAME_END_EVENT, { winner: player2 });
           }
-        }, 300);
+        }, 600);
       }
     },
     placeShipsOnBoards() {
