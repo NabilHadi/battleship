@@ -1,21 +1,22 @@
+@import url("https://fonts.googleapis.com/css2?family=Anton&display=swap");
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  color: #222;
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Anton", sans-serif;
+  color: #34302d;
+  letter-spacing: 1px;
 }
 
 .btn {
   padding: 8px 16px;
-  background-color: #a6d4ea;
+  background-color: #ef9849;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: 600;
-  color: #444;
   line-height: 1.5;
 }
 
@@ -43,7 +44,7 @@ body {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(4, 1fr);
-  background-color: aliceblue;
+  background-color: #f5e7de;
   gap: 8px;
   position: relative;
 }
@@ -99,20 +100,20 @@ body {
 }
 
 .player-ships #reset-ships-btn {
-  background-color: rgb(179, 220, 117);
+  background-color: #ef9849;
 }
 
 .player-ships #restart-game-btn {
-  background-color: #73a7c1;
+  background-color: #ef9849;
 }
 
 .player-ships #random-ships-btn {
-  background-color: rgb(179, 220, 117);
+  background-color: #ef9849;
 }
 
 .player-ships .ship {
   display: flex;
-  background-color: greenyellow;
+  background-color: #ff8c32;
 }
 
 .player-ships .ship[data-is-vertical="true"] {
@@ -149,6 +150,7 @@ body {
 }
 
 .player-container .board-title {
+  font-size: 1.3rem;
   padding: 3px;
 }
 
@@ -169,7 +171,7 @@ body {
   grid-template-rows: repeat(9, minmax(40px, 1fr));
   justify-content: center;
   align-items: center;
-  background-color: #7ebbd9;
+  background-color: #c1a18a;
   position: relative;
 }
 
@@ -177,6 +179,12 @@ body {
   border: 1px solid rgba(0, 0, 0, 0.234);
   width: 100%;
   height: 100%;
+  position: relative;
+}
+
+.board .board-unit:hover {
+  background-color: #34302d;
+  opacity: 0.7;
 }
 
 .board .board-unit.ship-placement-hint {
@@ -184,15 +192,35 @@ body {
 }
 
 .board .board-unit[data-has-ship="true"] {
-  background-color: greenyellow;
+  background-color: #5b7a8c;
 }
 
-.board .board-unit[data-is-hit="true"] {
-  background-color: rgb(0, 0, 0);
+.board .board-unit[data-has-ship="true"][data-player="2"] {
+  background-color: #bd3b3b;
 }
 
-.board .board-unit[data-has-ship="true"][data-is-hit="true"] {
-  background-color: red;
+.board .board-unit[data-is-hit="true"]:not([data-has-ship="true"]):after {
+  content: "";
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background-color: rgb(255, 255, 255);
+}
+
+.board .board-unit[data-has-ship="true"][data-is-hit="true"]::after {
+  content: "";
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background-color: #34302d;
 }
 
 .board .enemy-overlay {
@@ -204,6 +232,7 @@ body {
   justify-content: center;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10;
 }
 
 .board .enemy-overlay.hide {
