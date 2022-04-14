@@ -113,7 +113,7 @@ body {
 
 .player-ships .ship {
   display: flex;
-  background-color: #ff8c32;
+  background-color: #5b7a8c;
 }
 
 .player-ships .ship[data-is-vertical="true"] {
@@ -137,10 +137,10 @@ body {
   flex-direction: column;
 }
 
-.player-ships .ship > * {
-  height: 20px;
-  width: 20px;
-  border: 1px solid black;
+.player-ships .ship > div {
+  height: 30px;
+  width: 30px;
+  border: 1px solid rgba(0, 0, 0, 0.455);
 }
 
 .player-container {
