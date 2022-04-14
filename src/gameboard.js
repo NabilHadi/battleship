@@ -1,8 +1,8 @@
 import Ship from "./ship";
 import { getRandomCoordinates } from "./utils";
 
-const isWithinBoardRange = (coordinatesArray, maxLength) => {
-  return coordinatesArray.every((co) => {
+const isWithinBoardRange = (coordinates, maxLength) => {
+  return coordinates.every((co) => {
     return co.x >= 0 && co.x < maxLength && co.y >= 0 && co.y < maxLength;
   });
 };
@@ -57,13 +57,13 @@ const Gameboard = function (size = 0, _player = null) {
     get player() {
       return _player;
     },
-    canPlaceShipAt(coordinatesArray) {
-      if (!isWithinBoardRange(coordinatesArray, size)) {
+    canPlaceShipAt(coordinates) {
+      if (!isWithinBoardRange(coordinates, size)) {
         return false;
       }
 
       if (
-        coordinatesArray.some((coords) => {
+        coordinates.some((coords) => {
           return getShipAt(coords, shipsArray);
         })
       ) {
@@ -72,10 +72,10 @@ const Gameboard = function (size = 0, _player = null) {
 
       return true;
     },
-    placeShipAt(...coordinatesArray) {
-      if (!this.canPlaceShipAt(coordinatesArray)) return false;
+    placeShipAt(name, ...coordinates) {
+      if (!this.canPlaceShipAt(coordinates)) return false;
 
-      const ship = Ship(coordinatesArray);
+      const ship = Ship({ name, coordinates });
       shipsArray.push(ship);
 
       return true;

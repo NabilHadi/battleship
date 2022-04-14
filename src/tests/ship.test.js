@@ -1,30 +1,56 @@
 import Ship from "../ship";
 
 describe("Ship Object", () => {
+  test("returns ship with name", () => {
+    const ship = Ship({
+      name: "Hello",
+      coordinates: [
+        { x: 0, y: 0 },
+        { x: 0, y: 1 },
+      ],
+    });
+    expect(ship.name).toBe("Hello");
+
+    const ship2 = Ship({
+      name: "Hello2222",
+      coordinates: [
+        { x: 0, y: 0 },
+        { x: 0, y: 1 },
+      ],
+    });
+    expect(ship2.name).toBe("Hello2222");
+  });
+
   test("returns correct length", () => {
-    const ship = Ship([
-      { x: 0, y: 0 },
-      { x: 0, y: 1 },
-      { x: 0, y: 2 },
-    ]);
+    const ship = Ship({
+      coordinates: [
+        { x: 0, y: 0 },
+        { x: 0, y: 1 },
+        { x: 0, y: 2 },
+      ],
+    });
     expect(ship.length).toBe(3);
-    const ship2 = Ship([
-      { x: 0, y: 0 },
-      { x: 0, y: 1 },
-      { x: 0, y: 2 },
-      { x: 0, y: 3 },
-      { x: 1, y: 0 },
-      { x: 1, y: 1 },
-    ]);
+    const ship2 = Ship({
+      coordinates: [
+        { x: 0, y: 0 },
+        { x: 0, y: 1 },
+        { x: 0, y: 2 },
+        { x: 0, y: 3 },
+        { x: 1, y: 0 },
+        { x: 1, y: 1 },
+      ],
+    });
     expect(ship2.length).toBe(6);
   });
 
   test("hit function works correctly", () => {
-    const ship = Ship([
-      { x: 0, y: 0 },
-      { x: 0, y: 1 },
-      { x: 0, y: 2 },
-    ]);
+    const ship = Ship({
+      coordinates: [
+        { x: 0, y: 0 },
+        { x: 0, y: 1 },
+        { x: 0, y: 2 },
+      ],
+    });
     ship.hit({ x: 0, y: 0 });
     expect(ship.isHitAt({ x: 0, y: 0 })).toBe(true);
     expect(ship.isHitAt({ x: 0, y: 1 })).toBe(false);
@@ -32,11 +58,13 @@ describe("Ship Object", () => {
   });
 
   test("isHitAt function works correctly", () => {
-    const ship = Ship([
-      { x: 0, y: 0 },
-      { x: 0, y: 1 },
-      { x: 0, y: 2 },
-    ]);
+    const ship = Ship({
+      coordinates: [
+        { x: 0, y: 0 },
+        { x: 0, y: 1 },
+        { x: 0, y: 2 },
+      ],
+    });
     expect(ship.isHitAt({ x: 0, y: 0 })).toBe(false);
     expect(ship.isHitAt({ x: 0, y: 1 })).toBe(false);
     ship.hit({ x: 0, y: 2 });
@@ -44,24 +72,29 @@ describe("Ship Object", () => {
   });
 
   test("isSunk function returns correct value", () => {
-    const ship = Ship([
-      { x: 1, y: 0 },
-      { x: 1, y: 1 },
-      { x: 1, y: 2 },
-    ]);
-    expect(ship.isSunk()).toBe(false);
+    const ship = Ship({
+      coordinates: [
+        { x: 1, y: 0 },
+        { x: 1, y: 1 },
+        { x: 1, y: 2 },
+      ],
+    });
     ship.hit({ x: 1, y: 0 });
+    expect(ship.isSunk()).toBe(false);
     ship.hit({ x: 1, y: 1 });
+    expect(ship.isSunk()).toBe(false);
     ship.hit({ x: 1, y: 2 });
     expect(ship.isSunk()).toBe(true);
   });
 
   test("returns correct hit coordinates", () => {
-    const ship = Ship([
-      { x: 1, y: 0 },
-      { x: 1, y: 1 },
-      { x: 1, y: 2 },
-    ]);
+    const ship = Ship({
+      coordinates: [
+        { x: 1, y: 0 },
+        { x: 1, y: 1 },
+        { x: 1, y: 2 },
+      ],
+    });
     ship.hit({ x: 1, y: 1 });
     expect(
       ship.getHitCoordinates().every((value) => {
@@ -71,11 +104,13 @@ describe("Ship Object", () => {
         return value.isHit;
       })
     ).toBe(true);
-    const ship2 = Ship([
-      { x: 5, y: 0 },
-      { x: 5, y: 1 },
-      { x: 5, y: 2 },
-    ]);
+    const ship2 = Ship({
+      coordinates: [
+        { x: 5, y: 0 },
+        { x: 5, y: 1 },
+        { x: 5, y: 2 },
+      ],
+    });
     expect(ship2.getHitCoordinates().length === 0).toBe(true);
     ship2.hit({ x: 5, y: 1 });
     expect(ship2.getHitCoordinates().length === 0).toBe(false);

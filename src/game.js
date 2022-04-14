@@ -56,18 +56,23 @@ const GameModule = (function () {
     },
     placeShipsOnBoards() {
       player2Gameboard.placeShipAt(
+        "Aircraft",
         ...player2Gameboard.getValidShipCoordinates(5)
       );
       player2Gameboard.placeShipAt(
+        "Battleship",
         ...player2Gameboard.getValidShipCoordinates(4)
       );
       player2Gameboard.placeShipAt(
+        "Submarine",
         ...player2Gameboard.getValidShipCoordinates(3)
       );
       player2Gameboard.placeShipAt(
+        "Cruiser",
         ...player2Gameboard.getValidShipCoordinates(3)
       );
       player2Gameboard.placeShipAt(
+        "Destroyer",
         ...player2Gameboard.getValidShipCoordinates(2)
       );
     },

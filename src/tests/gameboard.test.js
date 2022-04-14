@@ -14,7 +14,7 @@ describe("Gameboard Object", () => {
   test("getShips function returns correct values", () => {
     const gameboard = Gameboard(5);
     expect(gameboard.getShips().length).toBe(0);
-    gameboard.placeShipAt({ x: 1, y: 1 });
+    gameboard.placeShipAt("test ship", { x: 1, y: 1 });
     const shipsArray = gameboard.getShips();
     expect(shipsArray.length).toBe(1);
   });
@@ -22,18 +22,20 @@ describe("Gameboard Object", () => {
   test("placeShipAt function updates ships array", () => {
     const gameboard = Gameboard(5);
     expect(gameboard.getShips().length).toBe(0);
-    gameboard.placeShipAt({ x: 0, y: 0 });
+    gameboard.placeShipAt("test ship", { x: 0, y: 0 });
     expect(gameboard.getShips().length).toBe(1);
-    gameboard.placeShipAt({ x: 3, y: 3 });
+    gameboard.placeShipAt("test ship", { x: 3, y: 3 });
     expect(gameboard.getShips().length).toBe(2);
   });
 
   test("placeShipAt function returns false if coordinates already have a ship", () => {
     const gameboard = Gameboard(5);
-    expect(gameboard.placeShipAt({ x: 0, y: 0 })).toBe(true);
-    expect(gameboard.placeShipAt({ x: 0, y: 0 })).toBe(false);
-    expect(gameboard.placeShipAt({ x: 3, y: 3 })).toBe(true);
-    expect(gameboard.placeShipAt({ x: 3, y: 3 })).toBe(false);
+    expect(gameboard.placeShipAt("test ship", { x: 0, y: 0 })).toBe(true);
+    expect(gameboard.placeShipAt("test ship", { x: 0, y: 0 })).toBe(false);
+    expect(gameboard.placeShipAt("test ship", { x: 3, y: 3 })).toBe(true);
+    expect(
+      gameboard.placeShipAt("test ship", "test ship", { x: 3, y: 3 })
+    ).toBe(false);
   });
 
   test("receiveAttack function works with no ships on board", () => {
@@ -66,14 +68,14 @@ describe("Gameboard Object", () => {
     gameboard.receiveAttack({ x: 2, y: 2 });
     expect(gameboard.getMissedAttacks().length).toBe(2);
 
-    gameboard.placeShipAt({ x: 0, y: 0 });
+    gameboard.placeShipAt("test ship", { x: 0, y: 0 });
     gameboard.receiveAttack({ x: 0, y: 0 });
     expect(gameboard.getMissedAttacks().length).toBe(2);
   });
 
   test("receiveAttack updated ship state on successful attack", () => {
     const gameboard = Gameboard(5);
-    gameboard.placeShipAt({ x: 1, y: 1 }, { x: 2, y: 1 });
+    gameboard.placeShipAt("test ship", { x: 1, y: 1 }, { x: 2, y: 1 });
     gameboard.receiveAttack({ x: 1, y: 1 });
     expect(gameboard.getShips()[0].isSunk()).toBe(false);
     gameboard.receiveAttack({ x: 2, y: 1 });
@@ -82,8 +84,8 @@ describe("Gameboard Object", () => {
 
   test("isAllShipsSunk returns correct value", () => {
     const gameboard = Gameboard(2);
-    gameboard.placeShipAt({ x: 0, y: 0 }, { x: 0, y: 1 });
-    gameboard.placeShipAt({ x: 1, y: 1 });
+    gameboard.placeShipAt("test ship", { x: 0, y: 0 }, { x: 0, y: 1 });
+    gameboard.placeShipAt("test ship", { x: 1, y: 1 });
 
     expect(gameboard.isAllShipsSunk()).toBe(false);
 
@@ -95,7 +97,7 @@ describe("Gameboard Object", () => {
     expect(gameboard.isAllShipsSunk()).toBe(true);
 
     const gameboard2 = Gameboard(2);
-    gameboard2.placeShipAt({ x: 0, y: 0 }, { x: 0, y: 1 });
+    gameboard2.placeShipAt("test ship", { x: 0, y: 0 }, { x: 0, y: 1 });
 
     expect(gameboard2.isAllShipsSunk()).toBe(false);
 
@@ -107,7 +109,7 @@ describe("Gameboard Object", () => {
 
   test("resetBoard resets the board", () => {
     const gameboard = Gameboard(2);
-    gameboard.placeShipAt({ x: 0, y: 0 }, { x: 0, y: 1 });
+    gameboard.placeShipAt("test ship", { x: 0, y: 0 }, { x: 0, y: 1 });
     expect(gameboard.getShips().length).toBe(1);
     gameboard.resetBoard();
     expect(gameboard.getShips().length).toBe(0);
@@ -120,7 +122,7 @@ describe("Gameboard Object", () => {
 
   test("hasShip returns correct value", () => {
     const gameboard = Gameboard(9);
-    gameboard.placeShipAt({ x: 0, y: 5 });
+    gameboard.placeShipAt("test ship", { x: 0, y: 5 });
     expect(gameboard.hasShipAt({ x: 0, y: 5 })).toBe(true);
     expect(gameboard.hasShipAt({ x: 5, y: 0 })).toBe(false);
     expect(gameboard.hasShipAt({ x: 4, y: 5 })).toBe(false);
@@ -133,23 +135,23 @@ describe("Gameboard Object", () => {
       gameboard.resetBoard();
       shipsArray = gameboard.getValidShipCoordinates(5);
       expect(shipsArray.length).toBe(5);
-      gameboard.placeShipAt(...shipsArray);
+      gameboard.placeShipAt("test ship", ...shipsArray);
 
       shipsArray = gameboard.getValidShipCoordinates(4);
       expect(shipsArray.length).toBe(4);
-      gameboard.placeShipAt(...shipsArray);
+      gameboard.placeShipAt("test ship", ...shipsArray);
 
       shipsArray = gameboard.getValidShipCoordinates(3);
       expect(shipsArray.length).toBe(3);
-      gameboard.placeShipAt(...shipsArray);
+      gameboard.placeShipAt("test ship", ...shipsArray);
 
       shipsArray = gameboard.getValidShipCoordinates(3);
       expect(shipsArray.length).toBe(3);
-      gameboard.placeShipAt(...shipsArray);
+      gameboard.placeShipAt("test ship", ...shipsArray);
 
       shipsArray = gameboard.getValidShipCoordinates(2);
       expect(shipsArray.length).toBe(2);
-      gameboard.placeShipAt(...shipsArray);
+      gameboard.placeShipAt("test ship", ...shipsArray);
     }
   });
 });

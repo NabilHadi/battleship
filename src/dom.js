@@ -95,7 +95,10 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
         const coordinates = GameModule.player1Gameboard.getValidShipCoordinates(
           Number(shipView.getView().dataset.length)
         );
-        GameModule.player1Gameboard.placeShipAt(...coordinates);
+        GameModule.player1Gameboard.placeShipAt(
+          shipView.getView().id,
+          ...coordinates
+        );
         shipView.isPlaced = true;
         coordinates.forEach((c) => {
           player1BoardView.changeShipStateFor(c, true);
@@ -190,6 +193,7 @@ const DOMController = (function (player1ContainerView, player2ContainerView) {
 
         if (length > 0) {
           const canPlace = GameModule.player1Gameboard.placeShipAt(
+            "ship",
             ...adjacentUnits
           );
           if (canPlace) {

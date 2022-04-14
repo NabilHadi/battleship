@@ -1,5 +1,5 @@
-const Ship = function (coordinatesArr = []) {
-  coordinatesArr = coordinatesArr.map((coords) => {
+const Ship = function ({ name, coordinates = [] }) {
+  const shipCoordinates = coordinates.map((coords) => {
     return {
       ...coords,
       isHit: false,
@@ -7,32 +7,36 @@ const Ship = function (coordinatesArr = []) {
   });
 
   return {
+    get name() {
+      return name;
+    },
     get length() {
-      return coordinatesArr.length;
+      return shipCoordinates.length;
     },
     hit(coords) {
-      coordinatesArr.find((value) => {
+      const fCoords = shipCoordinates.find((value) => {
         return value.x === coords.x && value.y === coords.y;
-      }).isHit = true;
+      });
+      return fCoords && (fCoords.isHit = true);
     },
     isHitAt(coords) {
-      const hitCoords = coordinatesArr.find((value) => {
+      const hitCoords = shipCoordinates.find((value) => {
         return value.x === coords.x && value.y === coords.y;
       });
       return hitCoords && hitCoords.isHit;
     },
     isSunk() {
-      return coordinatesArr.every((value) => {
+      return shipCoordinates.every((value) => {
         return value.isHit === true;
       });
     },
     getHitCoordinates() {
-      return coordinatesArr.filter((value) => {
+      return shipCoordinates.filter((value) => {
         return value.isHit === true;
       });
     },
     getCoordinates() {
-      return coordinatesArr;
+      return shipCoordinates;
     },
   };
 };
