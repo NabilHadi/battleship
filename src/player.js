@@ -1,49 +1,21 @@
-import { getRandomCoordinates } from "./utils";
-
-const Player = function ({ name: _name, id: _id } = {}) {
+const Player = function ({ name, id } = {}) {
   return {
     get name() {
-      return _name;
+      return name;
     },
     get id() {
-      return _id;
+      return id;
     },
   };
 };
 
-export const AIPlayer = function (name, id, enmeyGamebaord) {
-  const playerObj = Player({ name, id });
-  const nextMoves = [];
-
+const AIPlayer = function ({ player, nextMoves, playFunction }) {
   return {
-    ...playerObj,
-    play() {
-      let coordinates = nextMoves.shift();
-      if (!coordinates) {
-        coordinates = getRandomCoordinates(enmeyGamebaord.size);
-      }
-      let response = enmeyGamebaord.receiveAttack(coordinates);
-      while (!response) {
-        coordinates = nextMoves.shift();
-        if (!coordinates) {
-          coordinates = getRandomCoordinates(enmeyGamebaord.size);
-        }
-        response = enmeyGamebaord.receiveAttack(coordinates);
-      }
-
-      if (!response.isMissedAttack) {
-        nextMoves.push({ x: coordinates.x + 1, y: coordinates.y });
-        nextMoves.push({ x: coordinates.x - 1, y: coordinates.y });
-        nextMoves.push({ x: coordinates.x, y: coordinates.y + 1 });
-        nextMoves.push({ x: coordinates.x, y: coordinates.y - 1 });
-      }
-
-      return {
-        coordinates,
-        response,
-      };
-    },
+    ...player,
+    nextMoves,
+    play: playFunction,
   };
 };
 
 export default Player;
+export { AIPlayer };
