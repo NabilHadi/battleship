@@ -2,7 +2,7 @@
 
 ## Live link
 
-https://nabilhad.me/battleship/
+https://nabilhadi.github.io/battleship/
 
 ## Preview
 
